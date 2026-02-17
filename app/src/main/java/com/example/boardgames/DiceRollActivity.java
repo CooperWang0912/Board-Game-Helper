@@ -1,9 +1,42 @@
 package com.example.boardgames;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DiceRollActivity extends AppCompatActivity {
+
+    private static final Pattern DICE_PATTERN = Pattern.compile("^(\\d*)d(\\d+)$", Pattern.CASE_INSENSITIVE);
+    private static final int ANIMATION_STEPS = 12;
+    private static final long ANIMATION_STEP_MS = 60;
+
+    private TextInputEditText editDiceInput;
+    private MaterialButton btnRoll;
+    private MaterialCardView cardResult;
+    private TextView textResult;
+    private TextView textDiceLabel;
+    private TextView textError;
+
+    private final Random random = new Random();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean isAnimating = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,6 +46,124 @@ public class DiceRollActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        editDiceInput = findViewById(R.id.edit_dice_input);
+        btnRoll = findViewById(R.id.btn_roll);
+        cardResult = findViewById(R.id.card_result);
+        textResult = findViewById(R.id.text_result);
+        textDiceLabel = findViewById(R.id.text_dice_label);
+        textError = findViewById(R.id.text_error);
+
+        btnRoll.setOnClickListener(v -> onRollClicked());
+
+        editDiceInput.setOnEditorActionListener((v, actionId, event) -> {
+            onRollClicked();
+            return true;
+        });
+    }
+
+    private void onRollClicked() {
+        if (isAnimating) return;
+
+        String input = editDiceInput.getText() != null ? editDiceInput.getText().toString().trim() : "";
+        textError.setVisibility(View.GONE);
+
+        if (input.isEmpty()) {
+            showError(getString(R.string.error_empty_input));
+            return;
+        }
+
+        Matcher matcher = DICE_PATTERN.matcher(input);
+        if (!matcher.matches()) {
+            showError(getString(R.string.error_invalid_format));
+            return;
+        }
+
+        String countStr = matcher.group(1);
+        int count = (countStr == null || countStr.isEmpty()) ? 1 : Integer.parseInt(countStr);
+        int sides = Integer.parseInt(matcher.group(2));
+
+        if (sides < 2) {
+            showError(getString(R.string.error_min_sides));
+            return;
+        }
+
+        if (sides > 1000) {
+            showError(getString(R.string.error_max_sides));
+            return;
+        }
+
+        if (count < 1 || count > 100) {
+            showError(getString(R.string.error_dice_count));
+            return;
+        }
+
+        int finalResult = 0;
+        for (int i = 0; i < count; i++) {
+            finalResult += random.nextInt(sides) + 1;
+        }
+
+        String label = count + "d" + sides;
+        animateRoll(label, finalResult, count, sides);
+    }
+
+    private void showError(String message) {
+        textError.setText(message);
+        textError.setVisibility(View.VISIBLE);
+    }
+
+    private void animateRoll(String label, int finalResult, int count, int sides) {
+        isAnimating = true;
+        btnRoll.setEnabled(false);
+
+        textDiceLabel.setText(label);
+        cardResult.setVisibility(View.VISIBLE);
+
+        // Rapid number cycling animation
+        for (int i = 0; i < ANIMATION_STEPS; i++) {
+            final int step = i;
+            handler.postDelayed(() -> {
+                // Generate a random number in the valid range for this dice config
+                int fakeResult = 0;
+                for (int d = 0; d < count; d++) {
+                    fakeResult += random.nextInt(sides) + 1;
+                }
+                textResult.setText(String.valueOf(fakeResult));
+
+                // Subtle scale pulse on each tick
+                textResult.setScaleX(1.1f);
+                textResult.setScaleY(1.1f);
+                textResult.animate().scaleX(1f).scaleY(1f).setDuration(ANIMATION_STEP_MS).start();
+
+            }, step * ANIMATION_STEP_MS);
+        }
+
+        // Final result with bounce animation
+        handler.postDelayed(() -> {
+            textResult.setText(String.valueOf(finalResult));
+
+            AnimatorSet bounceSet = new AnimatorSet();
+
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(textResult, "scaleX", 0.5f, 1f);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(textResult, "scaleY", 0.5f, 1f);
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(textResult, "alpha", 0.5f, 1f);
+
+            ObjectAnimator cardScaleX = ObjectAnimator.ofFloat(cardResult, "scaleX", 0.95f, 1f);
+            ObjectAnimator cardScaleY = ObjectAnimator.ofFloat(cardResult, "scaleY", 0.95f, 1f);
+
+            bounceSet.playTogether(scaleX, scaleY, alpha, cardScaleX, cardScaleY);
+            bounceSet.setDuration(400);
+            bounceSet.setInterpolator(new OvershootInterpolator(2f));
+            bounceSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isAnimating = false;
+                    btnRoll.setEnabled(true);
+                }
+            });
+            bounceSet.start();
+
+        }, ANIMATION_STEPS * ANIMATION_STEP_MS);
     }
 
     @Override

@@ -21,9 +21,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChessActivity" />
-        <activity android:name=".CheckersActivity" />
-        <activity android:name=".TicTacToeActivity" />
+        <activity
+            android:name=".DiceRollActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".CharacterCreationActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".DungeonMasterActivity"
+            android:parentActivityName=".MainActivity" />
 
     </application>
 

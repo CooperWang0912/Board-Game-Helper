@@ -4,6 +4,14 @@
     <string name="dice_roll">Dice Roll</string>
     <string name="dice_roll_desc">Roll the dice and test your luck</string>
     <string name="dice_roll_placeholder">Dice Roll coming soon!</string>
+    <string name="dice_roll_hint">Enter dice notation like d20 or 2d6</string>
+    <string name="dice_input_hint">e.g. d20</string>
+    <string name="roll_button">Roll!</string>
+    <string name="error_empty_input">Enter a dice value first</string>
+    <string name="error_invalid_format">Use format like d20 or 2d6</string>
+    <string name="error_min_sides">Dice must have at least 2 sides</string>
+    <string name="error_max_sides">Maximum 1000 sides</string>
+    <string name="error_dice_count">Roll between 1 and 100 dice</string>
     <string name="character_creation">Character Creation</string>
     <string name="character_creation_desc">Build and customize your character</string>
     <string name="character_creation_placeholder">Character Creation coming soon!</string>
