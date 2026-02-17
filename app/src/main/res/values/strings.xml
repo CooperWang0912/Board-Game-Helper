@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Board Games</string>
+    <string name="choose_game">Choose a Game</string>
+    <string name="chess">Chess</string>
+    <string name="chess_desc">Classic strategy game for two players</string>
+    <string name="chess_placeholder">Chess game coming soon!</string>
+    <string name="checkers">Checkers</string>
+    <string name="checkers_desc">Jump and capture your opponent\'s pieces</string>
+    <string name="checkers_placeholder">Checkers game coming soon!</string>
+    <string name="tictactoe">Tic Tac Toe</string>
+    <string name="tictactoe_desc">Get three in a row to win</string>
+    <string name="tictactoe_placeholder">Tic Tac Toe game coming soon!</string>
+</resources>
