@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/checkers"
+        android:text="@string/dungeon_master"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -17,6 +17,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/checkers_placeholder"
+        android:text="@string/dungeon_master_placeholder"
         android:textSize="16sp" />
 </LinearLayout>

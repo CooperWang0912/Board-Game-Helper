@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Board Games</string>
     <string name="choose_game">Choose a Game</string>
-    <string name="chess">Chess</string>
-    <string name="chess_desc">Classic strategy game for two players</string>
-    <string name="chess_placeholder">Chess game coming soon!</string>
-    <string name="checkers">Checkers</string>
-    <string name="checkers_desc">Jump and capture your opponent\'s pieces</string>
-    <string name="checkers_placeholder">Checkers game coming soon!</string>
-    <string name="tictactoe">Tic Tac Toe</string>
-    <string name="tictactoe_desc">Get three in a row to win</string>
-    <string name="tictactoe_placeholder">Tic Tac Toe game coming soon!</string>
+    <string name="dice_roll">Dice Roll</string>
+    <string name="dice_roll_desc">Roll the dice and test your luck</string>
+    <string name="dice_roll_placeholder">Dice Roll coming soon!</string>
+    <string name="character_creation">Character Creation</string>
+    <string name="character_creation_desc">Build and customize your character</string>
+    <string name="character_creation_placeholder">Character Creation coming soon!</string>
+    <string name="dungeon_master">Dungeon Master</string>
+    <string name="dungeon_master_desc">Lead the adventure as the Dungeon Master</string>
+    <string name="dungeon_master_placeholder">Dungeon Master coming soon!</string>
 </resources>

@@ -16,7 +16,7 @@
         android:textStyle="bold" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_chess"
+        android:id="@+id/card_dice_roll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/chess"
+                android:text="@string/dice_roll"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -42,13 +42,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/chess_desc"
+                android:text="@string/dice_roll_desc"
                 android:textSize="14sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_checkers"
+        android:id="@+id/card_character_creation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -66,7 +66,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/checkers"
+                android:text="@string/character_creation"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -74,13 +74,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/checkers_desc"
+                android:text="@string/character_creation_desc"
                 android:textSize="14sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_tictactoe"
+        android:id="@+id/card_dungeon_master"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -97,7 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tictactoe"
+                android:text="@string/dungeon_master"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -105,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/tictactoe_desc"
+                android:text="@string/dungeon_master_desc"
                 android:textSize="14sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
