@@ -18,4 +18,102 @@
     <string name="dungeon_master">Dungeon Master</string>
     <string name="dungeon_master_desc">Lead the adventure as the Dungeon Master</string>
     <string name="dungeon_master_placeholder">Dungeon Master coming soon!</string>
+
+    <!-- Character Creation -->
+    <string name="cc_basic_info">Basic Info</string>
+    <string name="cc_name_hint">Character Name</string>
+    <string name="cc_race">Race</string>
+    <string name="cc_class">Class</string>
+    <string name="cc_level">Level</string>
+    <string name="cc_ability_scores">Ability Scores</string>
+    <string name="cc_ability">Ability</string>
+    <string name="cc_score">Score</string>
+    <string name="cc_mod">Mod</string>
+    <string name="cc_str">Strength (STR)</string>
+    <string name="cc_dex">Dexterity (DEX)</string>
+    <string name="cc_con">Constitution (CON)</string>
+    <string name="cc_int">Intelligence (INT)</string>
+    <string name="cc_wis">Wisdom (WIS)</string>
+    <string name="cc_cha">Charisma (CHA)</string>
+    <string name="cc_combat_stats">Combat Stats</string>
+    <string name="cc_hp">Hit Points</string>
+    <string name="cc_ac">Armor Class</string>
+    <string name="cc_speed">Speed (ft)</string>
+    <string name="cc_initiative">Initiative</string>
+    <string name="cc_details">Details</string>
+    <string name="cc_background">Background</string>
+    <string name="cc_alignment">Alignment</string>
+    <string name="cc_notes">Notes</string>
+    <string name="cc_save">Save</string>
+    <string name="cc_load">Load</string>
+    <string name="cc_save_success_title">Save Successful</string>
+    <string name="cc_save_success">%s has been saved successfully!</string>
+    <string name="cc_save_failed_title">Save Failed</string>
+    <string name="cc_save_failed">An error occurred while saving the character. Please try again.</string>
+    <string name="cc_load_success_title">Character Loaded</string>
+    <string name="cc_load_success">%s has been loaded successfully!</string>
+    <string name="cc_load_failed">An error occurred while loading the character. Please try again.</string>
+    <string name="cc_no_saved">No saved character found</string>
+    <string name="cc_name_required">Please enter a character name before saving.</string>
+    <string name="cc_select_character">Select a Character</string>
+    <string name="cc_delete">Delete</string>
+
+    <!-- Race options -->
+    <string-array name="cc_races">
+        <item>Human</item>
+        <item>Elf</item>
+        <item>Dwarf</item>
+        <item>Halfling</item>
+        <item>Gnome</item>
+        <item>Half-Elf</item>
+        <item>Half-Orc</item>
+        <item>Tiefling</item>
+        <item>Dragonborn</item>
+    </string-array>
+
+    <!-- Class options -->
+    <string-array name="cc_classes">
+        <item>Barbarian</item>
+        <item>Bard</item>
+        <item>Cleric</item>
+        <item>Druid</item>
+        <item>Fighter</item>
+        <item>Monk</item>
+        <item>Paladin</item>
+        <item>Ranger</item>
+        <item>Rogue</item>
+        <item>Sorcerer</item>
+        <item>Warlock</item>
+        <item>Wizard</item>
+    </string-array>
+
+    <!-- Background options -->
+    <string-array name="cc_backgrounds">
+        <item>Acolyte</item>
+        <item>Charlatan</item>
+        <item>Criminal</item>
+        <item>Entertainer</item>
+        <item>Folk Hero</item>
+        <item>Guild Artisan</item>
+        <item>Hermit</item>
+        <item>Noble</item>
+        <item>Outlander</item>
+        <item>Sage</item>
+        <item>Sailor</item>
+        <item>Soldier</item>
+        <item>Urchin</item>
+    </string-array>
+
+    <!-- Alignment options -->
+    <string-array name="cc_alignments">
+        <item>Lawful Good</item>
+        <item>Neutral Good</item>
+        <item>Chaotic Good</item>
+        <item>Lawful Neutral</item>
+        <item>True Neutral</item>
+        <item>Chaotic Neutral</item>
+        <item>Lawful Evil</item>
+        <item>Neutral Evil</item>
+        <item>Chaotic Evil</item>
+    </string-array>
 </resources>
