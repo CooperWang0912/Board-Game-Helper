@@ -18,6 +18,13 @@
     <string name="dungeon_master">Dungeon Master</string>
     <string name="dungeon_master_desc">Lead the adventure as the Dungeon Master</string>
     <string name="dungeon_master_placeholder">Dungeon Master coming soon!</string>
+    <string name="map">Map</string>
+    <string name="map_desc">View and explore the game world map</string>
+    <string name="map_placeholder">Map coming soon!</string>
+    <string name="map_import">Import map image</string>
+    <string name="map_empty_title">No Map Loaded</string>
+    <string name="map_empty_subtitle">Tap + to import a map image</string>
+    <string name="map_load_failed">Failed to load image</string>
 
     <!-- Character Creation -->
     <string name="cc_basic_info">Basic Info</string>
