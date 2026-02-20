@@ -167,6 +167,30 @@ public class MapImageView extends AppCompatImageView {
         return true;
     }
 
+    public void zoomIn() {
+        zoomBy(1.25f);
+    }
+
+    public void zoomOut() {
+        zoomBy(0.8f);
+    }
+
+    private void zoomBy(float factor) {
+        float currentScale = getCurrentScale();
+        float newScale = currentScale * factor;
+
+        if (newScale < MIN_SCALE) {
+            factor = MIN_SCALE / currentScale;
+        } else if (newScale > MAX_SCALE) {
+            factor = MAX_SCALE / currentScale;
+        }
+
+        float cx = viewWidth / 2f;
+        float cy = viewHeight / 2f;
+        imageMatrix.postScale(factor, factor, cx, cy);
+        setImageMatrix(imageMatrix);
+    }
+
     private float getCurrentScale() {
         imageMatrix.getValues(matrixValues);
         return matrixValues[Matrix.MSCALE_X];

@@ -16,7 +16,8 @@ public class MapActivity extends AppCompatActivity {
 
     private MapImageView mapImageView;
     private LinearLayout emptyState;
-    private ActivityResultLauncher<String> imagePickerLauncher;
+    private LinearLayout zoomControls;
+    private ActivityResultLauncher<String[]> imagePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +31,19 @@ public class MapActivity extends AppCompatActivity {
 
         mapImageView = findViewById(R.id.map_image_view);
         emptyState = findViewById(R.id.empty_state);
+        zoomControls = findViewById(R.id.zoom_controls);
 
         imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
+                new ActivityResultContracts.OpenDocument(),
                 this::onImagePicked
         );
 
         findViewById(R.id.fab_import_map).setOnClickListener(v ->
-                imagePickerLauncher.launch("image/*")
+                imagePickerLauncher.launch(new String[]{"image/*"})
         );
+
+        findViewById(R.id.fab_zoom_in).setOnClickListener(v -> mapImageView.zoomIn());
+        findViewById(R.id.fab_zoom_out).setOnClickListener(v -> mapImageView.zoomOut());
     }
 
     private void onImagePicked(Uri uri) {
@@ -63,6 +68,7 @@ public class MapActivity extends AppCompatActivity {
                     mapImageView.setImageDrawable(drawable);
                     mapImageView.setVisibility(View.VISIBLE);
                     emptyState.setVisibility(View.GONE);
+                    zoomControls.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(this, R.string.map_load_failed, Toast.LENGTH_SHORT).show();
                 }
