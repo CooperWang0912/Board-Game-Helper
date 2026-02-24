@@ -47,7 +47,7 @@ public class DiceRollActivity extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean isAnimating = false;
 
-    private final List<RollEntry> rollHistory = new ArrayList<>();
+    private static final List<RollEntry> rollHistory = new ArrayList<>();
     private HistoryAdapter historyAdapter;
 
     @Override
@@ -71,6 +71,11 @@ public class DiceRollActivity extends AppCompatActivity {
         historyAdapter = new HistoryAdapter(rollHistory);
         recyclerHistory.setLayoutManager(new LinearLayoutManager(this));
         recyclerHistory.setAdapter(historyAdapter);
+
+        if (!rollHistory.isEmpty()) {
+            textHistoryHeader.setVisibility(View.VISIBLE);
+            recyclerHistory.setVisibility(View.VISIBLE);
+        }
 
         btnRoll.setOnClickListener(v -> onRollClicked());
 
@@ -192,6 +197,12 @@ public class DiceRollActivity extends AppCompatActivity {
             bounceSet.start();
 
         }, ANIMATION_STEPS * ANIMATION_STEP_MS);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
