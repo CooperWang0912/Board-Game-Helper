@@ -27,6 +27,17 @@
     <string name="map_load_failed">Failed to load image</string>
     <string name="map_zoom_in">Zoom in</string>
     <string name="map_zoom_out">Zoom out</string>
+    <string name="map_add_point">Add point</string>
+    <string name="map_enter_label">Enter label</string>
+    <string name="map_label_hint">Point label</string>
+    <string name="map_delete_point_title">Delete point?</string>
+    <string name="map_delete_point_message">Remove \"%s\"?</string>
+    <string name="map_save_prompt_title">Unsaved points</string>
+    <string name="map_save_prompt_message">You have unsaved points. Save before leaving?</string>
+    <string name="map_save">Save</string>
+    <string name="map_discard">Discard</string>
+    <string name="map_points_saved">Points saved</string>
+    <string name="map_placement_mode">Tap on the map to place a point</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="light_mode">Light Mode</string>
 
