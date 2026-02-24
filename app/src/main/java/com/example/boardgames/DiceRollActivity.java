@@ -7,16 +7,23 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,10 +40,15 @@ public class DiceRollActivity extends AppCompatActivity {
     private TextView textResult;
     private TextView textDiceLabel;
     private TextView textError;
+    private TextView textHistoryHeader;
+    private RecyclerView recyclerHistory;
 
     private final Random random = new Random();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean isAnimating = false;
+
+    private final List<RollEntry> rollHistory = new ArrayList<>();
+    private HistoryAdapter historyAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +65,12 @@ public class DiceRollActivity extends AppCompatActivity {
         textResult = findViewById(R.id.text_result);
         textDiceLabel = findViewById(R.id.text_dice_label);
         textError = findViewById(R.id.text_error);
+        textHistoryHeader = findViewById(R.id.text_history_header);
+        recyclerHistory = findViewById(R.id.recycler_history);
+
+        historyAdapter = new HistoryAdapter(rollHistory);
+        recyclerHistory.setLayoutManager(new LinearLayoutManager(this));
+        recyclerHistory.setAdapter(historyAdapter);
 
         btnRoll.setOnClickListener(v -> onRollClicked());
 
@@ -112,6 +130,15 @@ public class DiceRollActivity extends AppCompatActivity {
         textError.setVisibility(View.VISIBLE);
     }
 
+    private void addToHistory(String label, int result) {
+        rollHistory.add(0, new RollEntry(label, result));
+        historyAdapter.notifyItemInserted(0);
+        recyclerHistory.scrollToPosition(0);
+
+        textHistoryHeader.setVisibility(View.VISIBLE);
+        recyclerHistory.setVisibility(View.VISIBLE);
+    }
+
     private void animateRoll(String label, int finalResult, int count, int sides) {
         isAnimating = true;
         btnRoll.setEnabled(false);
@@ -159,6 +186,7 @@ public class DiceRollActivity extends AppCompatActivity {
                 public void onAnimationEnd(Animator animation) {
                     isAnimating = false;
                     btnRoll.setEnabled(true);
+                    addToHistory(label, finalResult);
                 }
             });
             bounceSet.start();
@@ -170,5 +198,62 @@ public class DiceRollActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    // --- Data class ---
+
+    private static class RollEntry {
+        final String dice;
+        final int result;
+
+        RollEntry(String dice, int result) {
+            this.dice = dice;
+            this.result = result;
+        }
+    }
+
+    // --- RecyclerView Adapter ---
+
+    private static class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
+
+        private final List<RollEntry> entries;
+
+        HistoryAdapter(List<RollEntry> entries) {
+            this.entries = entries;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_dice_history, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            RollEntry entry = entries.get(position);
+            holder.indexText.setText(String.valueOf(entries.size() - position));
+            holder.diceText.setText(entry.dice);
+            holder.resultText.setText(String.valueOf(entry.result));
+        }
+
+        @Override
+        public int getItemCount() {
+            return entries.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            final TextView indexText;
+            final TextView diceText;
+            final TextView resultText;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                indexText = itemView.findViewById(R.id.text_history_index);
+                diceText = itemView.findViewById(R.id.text_history_dice);
+                resultText = itemView.findViewById(R.id.text_history_result);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@
     <string name="error_min_sides">Dice must have at least 2 sides</string>
     <string name="error_max_sides">Maximum 1000 sides</string>
     <string name="error_dice_count">Roll between 1 and 100 dice</string>
+    <string name="dice_history">Roll History</string>
     <string name="character_creation">Character Creation</string>
     <string name="character_creation_desc">Build and customize your character</string>
     <string name="character_creation_placeholder">Character Creation coming soon!</string>
