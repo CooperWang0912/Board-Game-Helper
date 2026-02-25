@@ -19,6 +19,15 @@
     <string name="dungeon_master">Dungeon Master</string>
     <string name="dungeon_master_desc">Lead the adventure as the Dungeon Master</string>
     <string name="dungeon_master_placeholder">Dungeon Master coming soon!</string>
+    <string name="dm_select_character">Select Your Character</string>
+    <string name="dm_no_characters">No saved characters found. Create a character first in Character Creation.</string>
+    <string name="dm_no_api_key">Gemini API key not configured. Add your key to the .env file in the project root.</string>
+    <string name="dm_send">Send</string>
+    <string name="dm_message_hint">What do you do?</string>
+    <string name="dm_loading">The DM is thinking\u2026</string>
+    <string name="dm_error">Something went wrong. Try again.</string>
+    <string name="dm_character_label">%1$s \u2022 Lvl %2$d %3$s %4$s</string>
+    <string name="dm_welcome">Choose a character to begin your adventure!</string>
     <string name="map">Map</string>
     <string name="map_desc">View and explore the game world map</string>
     <string name="map_placeholder">Map coming soon!</string>
