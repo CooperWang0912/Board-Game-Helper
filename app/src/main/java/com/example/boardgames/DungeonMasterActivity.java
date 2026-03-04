@@ -1,6 +1,7 @@
 package com.example.boardgames;
 
 import android.content.SharedPreferences;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,7 +10,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -129,7 +132,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         File imageDir = new File(getFilesDir(), "dm_images");
-        chatAdapter = new ChatAdapter(messages, imageDir);
+        chatAdapter = new ChatAdapter(messages, imageDir, this::showFullscreenImage);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         recyclerChat.setLayoutManager(layoutManager);
@@ -563,14 +566,20 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
     // ========== Chat Adapter ==========
 
+    interface OnImageClickListener {
+        void onImageClick(String imagePath);
+    }
+
     static class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
 
         private final List<ChatMessage> messages;
         private final File imageDir;
+        private final OnImageClickListener imageClickListener;
 
-        ChatAdapter(List<ChatMessage> messages, File imageDir) {
+        ChatAdapter(List<ChatMessage> messages, File imageDir, OnImageClickListener listener) {
             this.messages = messages;
             this.imageDir = imageDir;
+            this.imageClickListener = listener;
         }
 
         @NonNull
@@ -584,7 +593,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
             ChatMessage msg = messages.get(position);
-            holder.bind(msg, imageDir);
+            holder.bind(msg, imageDir, imageClickListener);
         }
 
         @Override
@@ -606,7 +615,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 imageScene = itemView.findViewById(R.id.image_scene);
             }
 
-            void bind(ChatMessage msg, File imageDir) {
+            void bind(ChatMessage msg, File imageDir, OnImageClickListener imageClickListener) {
                 FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) cardMessage.getLayoutParams();
 
                 if (msg.type == ChatMessage.TYPE_USER) {
@@ -616,6 +625,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
                     textSender.setTextColor(Color.parseColor("#1565C0"));
                     textMessage.setTextColor(Color.parseColor("#212121"));
                     imageScene.setVisibility(View.GONE);
+                    imageScene.setOnClickListener(null);
                 } else {
                     textSender.setText("Dungeon Master");
                     params.gravity = Gravity.START;
@@ -630,14 +640,22 @@ public class DungeonMasterActivity extends AppCompatActivity {
                             if (bitmap != null) {
                                 imageScene.setImageBitmap(bitmap);
                                 imageScene.setVisibility(View.VISIBLE);
+                                imageScene.setOnClickListener(v -> {
+                                    if (imageClickListener != null) {
+                                        imageClickListener.onImageClick(imageFile.getAbsolutePath());
+                                    }
+                                });
                             } else {
                                 imageScene.setVisibility(View.GONE);
+                                imageScene.setOnClickListener(null);
                             }
                         } else {
                             imageScene.setVisibility(View.GONE);
+                            imageScene.setOnClickListener(null);
                         }
                     } else {
                         imageScene.setVisibility(View.GONE);
+                        imageScene.setOnClickListener(null);
                     }
                 }
 
@@ -651,6 +669,28 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 cardMessage.setLayoutParams(params);
             }
         }
+    }
+
+    // ========== Fullscreen Image ==========
+
+    private void showFullscreenImage(String imagePath) {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_fullscreen_image);
+
+        ImageView imageFullscreen = dialog.findViewById(R.id.image_fullscreen);
+        ImageButton btnClose = dialog.findViewById(R.id.btn_close);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+        if (bitmap != null) {
+            imageFullscreen.setImageBitmap(bitmap);
+        }
+
+        // Tap image to dismiss
+        imageFullscreen.setOnClickListener(v -> dialog.dismiss());
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     // ========== Navigation ==========
