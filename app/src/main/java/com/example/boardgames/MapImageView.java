@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.view.ScaleGestureDetector;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MapImageView extends AppCompatImageView {
@@ -28,10 +30,15 @@ public class MapImageView extends AppCompatImageView {
     private static final float POINT_HIT_RADIUS_DP = 30f;
     private static final float POINT_RADIUS_DP = 8f;
     private static final long LONG_PRESS_DELAY_MS = 500;
+    private static final float DEFAULT_STROKE_WIDTH_DP = 3f;
+    private static final float ERASER_HIT_RADIUS_DP = 20f;
+    private static final float MIN_DRAW_DISTANCE_SQ = 4f; // 2px² in image space
 
     private final Matrix imageMatrix = new Matrix();
     private final Matrix inverseMatrix = new Matrix();
     private final float[] matrixValues = new float[9];
+    // Reusable arrays for touch coordinate mapping — avoids allocation in hot paths
+    private final float[] touchCoords = new float[2];
 
     private ScaleGestureDetector scaleDetector;
     private GestureDetector gestureDetector;
@@ -59,12 +66,61 @@ public class MapImageView extends AppCompatImageView {
 
     private float pointRadius;
     private float pointHitRadius;
+    private float density;
 
     // Long-press drag state
     private final Handler longPressHandler = new Handler(Looper.getMainLooper());
     private Runnable longPressRunnable;
     private MapPoint draggingPoint = null;
     private boolean wasLongPress = false;
+
+    // Drawing
+    public enum InteractionMode { NAVIGATE, DRAW, ERASE }
+
+    public static class DrawStroke {
+        public final List<float[]> points;
+        public int color;
+        public float strokeWidth;
+        // Cached path in image-space coordinates — avoids rebuilding every frame
+        Path cachedPath;
+
+        public DrawStroke(int color, float strokeWidth) {
+            this.points = new ArrayList<>();
+            this.color = color;
+            this.strokeWidth = strokeWidth;
+            this.cachedPath = new Path();
+        }
+
+        void addPoint(float x, float y) {
+            if (points.isEmpty()) {
+                cachedPath.moveTo(x, y);
+            } else {
+                cachedPath.lineTo(x, y);
+            }
+            points.add(new float[]{x, y});
+        }
+
+        void rebuildPath() {
+            cachedPath.reset();
+            if (points.isEmpty()) return;
+            cachedPath.moveTo(points.get(0)[0], points.get(0)[1]);
+            for (int i = 1; i < points.size(); i++) {
+                cachedPath.lineTo(points.get(i)[0], points.get(i)[1]);
+            }
+        }
+    }
+
+    private InteractionMode interactionMode = InteractionMode.NAVIGATE;
+    private final List<DrawStroke> strokes = new ArrayList<>();
+    private DrawStroke currentStroke = null;
+    private int drawColor = Color.RED;
+    private float drawStrokeWidth;
+    private float eraserHitRadius;
+    private boolean isDrawing = false;
+    // Cached so eraseStrokesAt doesn't recompute on every ACTION_MOVE
+    private boolean inverseMatrixValid = false;
+
+    private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public static class MapPoint {
         public float imgX;
@@ -104,9 +160,15 @@ public class MapImageView extends AppCompatImageView {
     private void init(Context context) {
         setScaleType(ScaleType.MATRIX);
 
-        float density = context.getResources().getDisplayMetrics().density;
+        density = context.getResources().getDisplayMetrics().density;
         pointRadius = POINT_RADIUS_DP * density;
         pointHitRadius = POINT_HIT_RADIUS_DP * density;
+        drawStrokeWidth = DEFAULT_STROKE_WIDTH_DP;
+        eraserHitRadius = ERASER_HIT_RADIUS_DP;
+
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setStrokeCap(Paint.Cap.ROUND);
+        strokePaint.setStrokeJoin(Paint.Join.ROUND);
 
         pointFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         pointFillPaint.setColor(Color.RED);
@@ -147,6 +209,7 @@ public class MapImageView extends AppCompatImageView {
                 }
 
                 imageMatrix.postScale(scaleFactor, scaleFactor, detector.getFocusX(), detector.getFocusY());
+                invalidateInverseMatrix();
                 setImageMatrix(imageMatrix);
                 invalidate();
                 return true;
@@ -161,10 +224,23 @@ public class MapImageView extends AppCompatImageView {
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                fitImageToView();
+                if (interactionMode == InteractionMode.NAVIGATE) {
+                    fitImageToView();
+                }
                 return true;
             }
         });
+    }
+
+    private void invalidateInverseMatrix() {
+        inverseMatrixValid = false;
+    }
+
+    private boolean ensureInverseMatrix() {
+        if (!inverseMatrixValid) {
+            inverseMatrixValid = imageMatrix.invert(inverseMatrix);
+        }
+        return inverseMatrixValid;
     }
 
     @Override
@@ -201,6 +277,7 @@ public class MapImageView extends AppCompatImageView {
         imageMatrix.reset();
         imageMatrix.postScale(scale, scale);
         imageMatrix.postTranslate(dx, dy);
+        invalidateInverseMatrix();
         setImageMatrix(imageMatrix);
         invalidate();
     }
@@ -208,7 +285,33 @@ public class MapImageView extends AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        drawStrokes(canvas);
         drawPoints(canvas);
+    }
+
+    private void drawStrokes(Canvas canvas) {
+        if (strokes.isEmpty() && currentStroke == null) return;
+
+        // Draw all stroke paths in image space by concatenating the matrix once,
+        // rather than transforming every point individually per frame.
+        canvas.save();
+        canvas.concat(imageMatrix);
+
+        for (int i = 0, n = strokes.size(); i < n; i++) {
+            DrawStroke stroke = strokes.get(i);
+            if (stroke.cachedPath.isEmpty()) continue;
+            strokePaint.setColor(stroke.color);
+            strokePaint.setStrokeWidth(stroke.strokeWidth);
+            canvas.drawPath(stroke.cachedPath, strokePaint);
+        }
+
+        if (currentStroke != null && !currentStroke.cachedPath.isEmpty()) {
+            strokePaint.setColor(currentStroke.color);
+            strokePaint.setStrokeWidth(currentStroke.strokeWidth);
+            canvas.drawPath(currentStroke.cachedPath, strokePaint);
+        }
+
+        canvas.restore();
     }
 
     private void drawPoints(Canvas canvas) {
@@ -240,6 +343,183 @@ public class MapImageView extends AppCompatImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (interactionMode == InteractionMode.DRAW) {
+            return handleDrawTouch(event);
+        } else if (interactionMode == InteractionMode.ERASE) {
+            return handleEraseTouch(event);
+        }
+        return handleNavigateTouch(event);
+    }
+
+    private boolean handleDrawTouch(MotionEvent event) {
+        // Always allow pinch-zoom even while drawing
+        scaleDetector.onTouchEvent(event);
+
+        if (isScaling) {
+            // If scaling started, cancel current stroke
+            if (currentStroke != null) {
+                currentStroke = null;
+                isDrawing = false;
+                invalidate();
+            }
+            return true;
+        }
+
+        if (event.getPointerCount() > 1) {
+            // Multi-touch: cancel drawing, let scale detector handle it
+            if (currentStroke != null) {
+                currentStroke = null;
+                isDrawing = false;
+                invalidate();
+            }
+            return true;
+        }
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                getParent().requestDisallowInterceptTouchEvent(true);
+                if (ensureInverseMatrix()) {
+                    touchCoords[0] = event.getX();
+                    touchCoords[1] = event.getY();
+                    inverseMatrix.mapPoints(touchCoords);
+                    currentStroke = new DrawStroke(drawColor, drawStrokeWidth);
+                    currentStroke.addPoint(touchCoords[0], touchCoords[1]);
+                    isDrawing = true;
+                    invalidate();
+                }
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if (isDrawing && currentStroke != null && ensureInverseMatrix()) {
+                    // Process batched historical samples and current sample
+                    // in one pass, then invalidate once
+                    int histSize = event.getHistorySize();
+                    for (int h = 0; h < histSize; h++) {
+                        addPointToCurrentStroke(
+                                event.getHistoricalX(h),
+                                event.getHistoricalY(h));
+                    }
+                    addPointToCurrentStroke(event.getX(), event.getY());
+                    invalidate();
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+                if (isDrawing && currentStroke != null && !currentStroke.points.isEmpty()) {
+                    strokes.add(currentStroke);
+                    hasUnsavedChanges = true;
+                }
+                currentStroke = null;
+                isDrawing = false;
+                getParent().requestDisallowInterceptTouchEvent(false);
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                currentStroke = null;
+                isDrawing = false;
+                getParent().requestDisallowInterceptTouchEvent(false);
+                break;
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                // Second finger down — cancel current stroke, start scaling
+                if (currentStroke != null) {
+                    currentStroke = null;
+                    isDrawing = false;
+                    invalidate();
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    /** Adds a screen-space point to currentStroke if far enough from the last point. */
+    private void addPointToCurrentStroke(float screenX, float screenY) {
+        touchCoords[0] = screenX;
+        touchCoords[1] = screenY;
+        inverseMatrix.mapPoints(touchCoords);
+
+        List<float[]> pts = currentStroke.points;
+        if (!pts.isEmpty()) {
+            float[] last = pts.get(pts.size() - 1);
+            float dx = touchCoords[0] - last[0];
+            float dy = touchCoords[1] - last[1];
+            if (dx * dx + dy * dy < MIN_DRAW_DISTANCE_SQ) {
+                return;
+            }
+        }
+
+        currentStroke.addPoint(touchCoords[0], touchCoords[1]);
+    }
+
+    private boolean handleEraseTouch(MotionEvent event) {
+        // Allow pinch-zoom while erasing
+        scaleDetector.onTouchEvent(event);
+
+        if (isScaling || event.getPointerCount() > 1) {
+            return true;
+        }
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                getParent().requestDisallowInterceptTouchEvent(true);
+                if (ensureInverseMatrix()) {
+                    eraseStrokesAt(event.getX(), event.getY());
+                }
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if (ensureInverseMatrix()) {
+                    // Check historical samples too for continuous erasing
+                    int histSize = event.getHistorySize();
+                    for (int h = 0; h < histSize; h++) {
+                        eraseStrokesAt(
+                                event.getHistoricalX(h),
+                                event.getHistoricalY(h));
+                    }
+                    eraseStrokesAt(event.getX(), event.getY());
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                getParent().requestDisallowInterceptTouchEvent(false);
+                break;
+        }
+
+        return true;
+    }
+
+    private void eraseStrokesAt(float screenX, float screenY) {
+        touchCoords[0] = screenX;
+        touchCoords[1] = screenY;
+        inverseMatrix.mapPoints(touchCoords);
+        float imgTouchX = touchCoords[0];
+        float imgTouchY = touchCoords[1];
+        float radiusSq = eraserHitRadius * eraserHitRadius;
+
+        boolean removed = false;
+        Iterator<DrawStroke> it = strokes.iterator();
+        while (it.hasNext()) {
+            DrawStroke stroke = it.next();
+            for (float[] pt : stroke.points) {
+                float dx = imgTouchX - pt[0];
+                float dy = imgTouchY - pt[1];
+                if (dx * dx + dy * dy <= radiusSq) {
+                    it.remove();
+                    removed = true;
+                    break;
+                }
+            }
+        }
+
+        if (removed) {
+            hasUnsavedChanges = true;
+            invalidate();
+        }
+    }
+
+    private boolean handleNavigateTouch(MotionEvent event) {
         // Don't let scale/gesture detectors interfere while dragging a point
         if (draggingPoint == null) {
             scaleDetector.onTouchEvent(event);
@@ -273,11 +553,12 @@ public class MapImageView extends AppCompatImageView {
             case MotionEvent.ACTION_MOVE:
                 if (draggingPoint != null && event.getPointerCount() == 1) {
                     // Dragging a point: update its image-space coordinates
-                    if (imageMatrix.invert(inverseMatrix)) {
-                        float[] pts = {event.getX(), event.getY()};
-                        inverseMatrix.mapPoints(pts);
-                        draggingPoint.imgX = pts[0];
-                        draggingPoint.imgY = pts[1];
+                    if (ensureInverseMatrix()) {
+                        touchCoords[0] = event.getX();
+                        touchCoords[1] = event.getY();
+                        inverseMatrix.mapPoints(touchCoords);
+                        draggingPoint.imgX = touchCoords[0];
+                        draggingPoint.imgY = touchCoords[1];
                         hasUnsavedChanges = true;
                         invalidate();
                     }
@@ -292,6 +573,7 @@ public class MapImageView extends AppCompatImageView {
                     float dx = event.getX() - lastTouch.x;
                     float dy = event.getY() - lastTouch.y;
                     imageMatrix.postTranslate(dx, dy);
+                    invalidateInverseMatrix();
                     setImageMatrix(imageMatrix);
                     invalidate();
                     lastTouch.set(event.getX(), event.getY());
@@ -360,11 +642,12 @@ public class MapImageView extends AppCompatImageView {
     private void handleTap(float screenX, float screenY) {
         if (placementMode) {
             // Convert screen coordinates to image coordinates
-            if (imageMatrix.invert(inverseMatrix)) {
-                float[] pts = {screenX, screenY};
-                inverseMatrix.mapPoints(pts);
+            if (ensureInverseMatrix()) {
+                touchCoords[0] = screenX;
+                touchCoords[1] = screenY;
+                inverseMatrix.mapPoints(touchCoords);
                 if (onPointPlacedListener != null) {
-                    onPointPlacedListener.onPointPlaced(pts[0], pts[1]);
+                    onPointPlacedListener.onPointPlaced(touchCoords[0], touchCoords[1]);
                 }
             }
         } else {
@@ -394,7 +677,7 @@ public class MapImageView extends AppCompatImageView {
         return null;
     }
 
-    // Public API
+    // Public API — Points
 
     public void setPlacementMode(boolean enabled) {
         this.placementMode = enabled;
@@ -426,6 +709,64 @@ public class MapImageView extends AppCompatImageView {
         hasUnsavedChanges = false;
         invalidate();
     }
+
+    // Public API — Drawing
+
+    public void setInteractionMode(InteractionMode mode) {
+        this.interactionMode = mode;
+        // Cancel any in-progress drawing
+        if (currentStroke != null) {
+            currentStroke = null;
+            isDrawing = false;
+            invalidate();
+        }
+    }
+
+    public InteractionMode getInteractionMode() {
+        return interactionMode;
+    }
+
+    public void setDrawColor(int color) {
+        this.drawColor = color;
+    }
+
+    public int getDrawColor() {
+        return drawColor;
+    }
+
+    public void setDrawStrokeWidth(float width) {
+        this.drawStrokeWidth = width;
+    }
+
+    public List<DrawStroke> getStrokes() {
+        return new ArrayList<>(strokes);
+    }
+
+    public void setStrokes(List<DrawStroke> newStrokes) {
+        strokes.clear();
+        strokes.addAll(newStrokes);
+        // Rebuild cached paths for strokes loaded from persistence
+        for (DrawStroke stroke : strokes) {
+            stroke.rebuildPath();
+        }
+        invalidate();
+    }
+
+    public void clearStrokes() {
+        strokes.clear();
+        hasUnsavedChanges = true;
+        invalidate();
+    }
+
+    public void undoLastStroke() {
+        if (!strokes.isEmpty()) {
+            strokes.remove(strokes.size() - 1);
+            hasUnsavedChanges = true;
+            invalidate();
+        }
+    }
+
+    // Public API — General
 
     public boolean hasUnsavedChanges() {
         return hasUnsavedChanges;
@@ -464,6 +805,7 @@ public class MapImageView extends AppCompatImageView {
         float cx = viewWidth / 2f;
         float cy = viewHeight / 2f;
         imageMatrix.postScale(factor, factor, cx, cy);
+        invalidateInverseMatrix();
         setImageMatrix(imageMatrix);
         invalidate();
     }

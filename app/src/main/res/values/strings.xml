@@ -48,12 +48,21 @@
     <string name="map_label_hint">Point label</string>
     <string name="map_delete_point_title">Delete point?</string>
     <string name="map_delete_point_message">Remove \"%s\"?</string>
-    <string name="map_save_prompt_title">Unsaved points</string>
-    <string name="map_save_prompt_message">You have unsaved points. Save before leaving?</string>
+    <string name="map_save_prompt_title">Unsaved changes</string>
+    <string name="map_save_prompt_message">You have unsaved changes. Save before leaving?</string>
     <string name="map_save">Save</string>
     <string name="map_discard">Discard</string>
     <string name="map_points_saved">Points saved</string>
     <string name="map_placement_mode">Tap on the map to place a point</string>
+    <string name="map_draw">Draw</string>
+    <string name="map_erase">Erase</string>
+    <string name="map_drawing_mode">Draw on the map</string>
+    <string name="map_eraser_mode">Tap a stroke to erase it</string>
+    <string name="map_clear_drawings_title">Clear all drawings?</string>
+    <string name="map_clear_drawings_message">This will remove all drawings from the map.</string>
+    <string name="map_drawings_cleared">All drawings cleared</string>
+    <string name="map_pick_color">Pick a color</string>
+    <string name="map_data_saved">Map data saved</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="light_mode">Light Mode</string>
 

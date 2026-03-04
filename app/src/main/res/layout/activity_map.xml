@@ -75,6 +75,39 @@
         android:gravity="end">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_color_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/map_pick_color"
+            android:visibility="gone"
+            app:backgroundTint="#FFFF0000"
+            app:srcCompat="@drawable/ic_palette"
+            app:tint="#FFFFFF" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_draw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/map_draw"
+            android:visibility="gone"
+            app:backgroundTint="#FFFFFF"
+            app:srcCompat="@drawable/ic_brush"
+            app:tint="#000000" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_erase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/map_erase"
+            android:visibility="gone"
+            app:backgroundTint="#FFFFFF"
+            app:srcCompat="@drawable/ic_eraser"
+            app:tint="#000000" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_point"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
