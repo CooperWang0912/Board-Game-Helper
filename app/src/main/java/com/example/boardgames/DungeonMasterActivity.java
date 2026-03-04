@@ -1,6 +1,8 @@
 package com.example.boardgames;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,14 +30,25 @@ import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import com.google.genai.types.Part;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DungeonMasterActivity extends AppCompatActivity {
 
@@ -51,6 +65,8 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private LinearLayout layoutInput;
     private TextInputEditText editMessage;
     private MaterialButton btnSend;
+    private MaterialButton btnIllustrate;
+    private TextView textLoading;
 
     private final List<ChatMessage> messages = new ArrayList<>();
     private ChatAdapter chatAdapter;
@@ -59,6 +75,9 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private final List<Content> conversationHistory = new ArrayList<>();
     private GenerateContentConfig geminiConfig;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final OkHttpClient httpClient = new OkHttpClient.Builder()
+            .readTimeout(120, TimeUnit.SECONDS)
+            .build();
 
     private String[] races;
     private String[] classes;
@@ -84,6 +103,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         setupRecyclerView();
 
         btnSend.setOnClickListener(v -> onSendClicked());
+        btnIllustrate.setOnClickListener(v -> onIllustrateClicked());
 
         String apiKey = BuildConfig.GEMINI_API_KEY;
         if (apiKey == null || apiKey.isEmpty() || apiKey.equals("your_key_here")) {
@@ -103,10 +123,13 @@ public class DungeonMasterActivity extends AppCompatActivity {
         layoutInput = findViewById(R.id.layout_input);
         editMessage = findViewById(R.id.edit_message);
         btnSend = findViewById(R.id.btn_send);
+        btnIllustrate = findViewById(R.id.btn_illustrate);
+        textLoading = findViewById(R.id.text_loading);
     }
 
     private void setupRecyclerView() {
-        chatAdapter = new ChatAdapter(messages);
+        File imageDir = new File(getFilesDir(), "dm_images");
+        chatAdapter = new ChatAdapter(messages, imageDir);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         recyclerChat.setLayoutManager(layoutManager);
@@ -306,11 +329,137 @@ public class DungeonMasterActivity extends AppCompatActivity {
     }
 
     private void setLoading(boolean loading) {
+        setLoading(loading, false);
+    }
+
+    private void setLoading(boolean loading, boolean isImageGeneration) {
         layoutLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
         btnSend.setEnabled(!loading);
+        btnIllustrate.setEnabled(!loading);
         if (loading) {
+            textLoading.setText(isImageGeneration
+                    ? R.string.dm_illustrate_loading
+                    : R.string.dm_loading);
             recyclerChat.scrollToPosition(messages.size() - 1);
         }
+    }
+
+    // ========== Image Generation ==========
+
+    private static final String HF_API_URL =
+            "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell";
+
+    private void onIllustrateClicked() {
+        String hfKey = BuildConfig.HF_API_KEY;
+        if (hfKey == null || hfKey.isEmpty() || hfKey.equals("your_hf_token_here")) {
+            Toast.makeText(this, "HuggingFace API key not configured. Add HF_API_KEY to .env",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Find the last DM text message to use as scene description
+        String lastDmText = null;
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            ChatMessage msg = messages.get(i);
+            if (msg.type == ChatMessage.TYPE_DM && !msg.hasImage()) {
+                lastDmText = msg.text;
+                break;
+            }
+        }
+
+        if (lastDmText == null) {
+            Toast.makeText(this, R.string.dm_no_scene, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setLoading(true, true);
+
+        String imagePrompt = "detailed fantasy illustration, D&D scene, "
+                + "dramatic lighting, rich colors, fantasy art style. " + lastDmText;
+
+        JSONObject requestJson = new JSONObject();
+        try {
+            requestJson.put("inputs", imagePrompt);
+        } catch (JSONException ignored) {
+            return;
+        }
+
+        executor.execute(() -> {
+            try {
+                RequestBody body = RequestBody.create(
+                        requestJson.toString(),
+                        MediaType.get("application/json; charset=utf-8"));
+
+                Request request = new Request.Builder()
+                        .url(HF_API_URL)
+                        .addHeader("Authorization", "Bearer " + hfKey)
+                        .post(body)
+                        .build();
+
+                try (Response response = httpClient.newCall(request).execute()) {
+                    if (!response.isSuccessful() || response.body() == null) {
+                        String errBody = response.body() != null
+                                ? response.body().string() : "No response body";
+                        String exMsg = "HTTP " + response.code() + ": " + errBody;
+                        runOnUiThread(() -> {
+                            addMessage(getString(R.string.dm_image_error) + "\n" + exMsg,
+                                    ChatMessage.TYPE_DM);
+                            setLoading(false, false);
+                        });
+                        return;
+                    }
+
+                    byte[] imageBytes = response.body().bytes();
+                    String fileName = "dm_scene_" + UUID.randomUUID().toString() + ".png";
+                    String savedFileName = saveImageToInternal(imageBytes, fileName);
+
+                    if (savedFileName == null) {
+                        runOnUiThread(() -> {
+                            addMessage(getString(R.string.dm_image_error)
+                                    + "\nFailed to save image.", ChatMessage.TYPE_DM);
+                            setLoading(false, false);
+                        });
+                        return;
+                    }
+
+                    runOnUiThread(() -> {
+                        addImageMessage("", savedFileName);
+                        setLoading(false, false);
+                        saveChat();
+                    });
+                }
+
+            } catch (Exception e) {
+                String exMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                runOnUiThread(() -> {
+                    addMessage(getString(R.string.dm_image_error) + "\n" + exMsg,
+                            ChatMessage.TYPE_DM);
+                    setLoading(false, false);
+                });
+            }
+        });
+    }
+
+    private String saveImageToInternal(byte[] imageBytes, String fileName) {
+        File imageDir = new File(getFilesDir(), "dm_images");
+        if (!imageDir.exists()) {
+            imageDir.mkdirs();
+        }
+        File imageFile = new File(imageDir, fileName);
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            fos.write(imageBytes);
+            fos.flush();
+            return fileName;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private void addImageMessage(String caption, String imageFileName) {
+        String displayText = (caption != null && !caption.isEmpty()) ? caption : "";
+        messages.add(new ChatMessage(displayText, ChatMessage.TYPE_IMAGE, imageFileName));
+        chatAdapter.notifyItemInserted(messages.size() - 1);
+        recyclerChat.scrollToPosition(messages.size() - 1);
     }
 
     // ========== Chat Persistence ==========
@@ -324,6 +473,9 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 JSONObject msgObj = new JSONObject();
                 msgObj.put("text", msg.text);
                 msgObj.put("type", msg.type);
+                if (msg.imageFileName != null) {
+                    msgObj.put("imageFileName", msg.imageFileName);
+                }
                 chatArray.put(msgObj);
             }
 
@@ -354,16 +506,23 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 JSONObject msgObj = chatArray.getJSONObject(i);
                 String text = msgObj.getString("text");
                 int type = msgObj.getInt("type");
+                String imageFileName = msgObj.optString("imageFileName", null);
 
-                messages.add(new ChatMessage(text, type));
+                if (imageFileName != null) {
+                    messages.add(new ChatMessage(text, type, imageFileName));
+                } else {
+                    messages.add(new ChatMessage(text, type));
+                }
 
-                // Rebuild Gemini conversation history
-                String role = (type == ChatMessage.TYPE_USER) ? "user" : "model";
-                Content content = Content.builder()
-                        .role(role)
-                        .parts(Part.fromText(text))
-                        .build();
-                conversationHistory.add(content);
+                // Rebuild Gemini conversation history (skip image messages)
+                if (type == ChatMessage.TYPE_USER || type == ChatMessage.TYPE_DM) {
+                    String role = (type == ChatMessage.TYPE_USER) ? "user" : "model";
+                    Content content = Content.builder()
+                            .role(role)
+                            .parts(Part.fromText(text))
+                            .build();
+                    conversationHistory.add(content);
+                }
             }
 
             chatAdapter.notifyDataSetChanged();
@@ -379,13 +538,26 @@ public class DungeonMasterActivity extends AppCompatActivity {
     static class ChatMessage {
         static final int TYPE_USER = 0;
         static final int TYPE_DM = 1;
+        static final int TYPE_IMAGE = 2;
 
         final String text;
         final int type;
+        final String imageFileName;
 
         ChatMessage(String text, int type) {
             this.text = text;
             this.type = type;
+            this.imageFileName = null;
+        }
+
+        ChatMessage(String text, int type, String imageFileName) {
+            this.text = text;
+            this.type = type;
+            this.imageFileName = imageFileName;
+        }
+
+        boolean hasImage() {
+            return imageFileName != null && !imageFileName.isEmpty();
         }
     }
 
@@ -394,9 +566,11 @@ public class DungeonMasterActivity extends AppCompatActivity {
     static class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MessageViewHolder> {
 
         private final List<ChatMessage> messages;
+        private final File imageDir;
 
-        ChatAdapter(List<ChatMessage> messages) {
+        ChatAdapter(List<ChatMessage> messages, File imageDir) {
             this.messages = messages;
+            this.imageDir = imageDir;
         }
 
         @NonNull
@@ -410,7 +584,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
             ChatMessage msg = messages.get(position);
-            holder.bind(msg);
+            holder.bind(msg, imageDir);
         }
 
         @Override
@@ -422,17 +596,17 @@ public class DungeonMasterActivity extends AppCompatActivity {
             private final MaterialCardView cardMessage;
             private final TextView textSender;
             private final TextView textMessage;
+            private final ImageView imageScene;
 
             MessageViewHolder(@NonNull View itemView) {
                 super(itemView);
                 cardMessage = itemView.findViewById(R.id.card_message);
                 textSender = itemView.findViewById(R.id.text_sender);
                 textMessage = itemView.findViewById(R.id.text_message);
+                imageScene = itemView.findViewById(R.id.image_scene);
             }
 
-            void bind(ChatMessage msg) {
-                textMessage.setText(msg.text);
-
+            void bind(ChatMessage msg, File imageDir) {
                 FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) cardMessage.getLayoutParams();
 
                 if (msg.type == ChatMessage.TYPE_USER) {
@@ -441,12 +615,37 @@ public class DungeonMasterActivity extends AppCompatActivity {
                     cardMessage.setCardBackgroundColor(Color.parseColor("#E3F2FD"));
                     textSender.setTextColor(Color.parseColor("#1565C0"));
                     textMessage.setTextColor(Color.parseColor("#212121"));
+                    imageScene.setVisibility(View.GONE);
                 } else {
                     textSender.setText("Dungeon Master");
                     params.gravity = Gravity.START;
                     cardMessage.setCardBackgroundColor(Color.parseColor("#FFF3E0"));
                     textSender.setTextColor(Color.parseColor("#E65100"));
                     textMessage.setTextColor(Color.parseColor("#212121"));
+
+                    if (msg.hasImage() && imageDir != null) {
+                        File imageFile = new File(imageDir, msg.imageFileName);
+                        if (imageFile.exists()) {
+                            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                            if (bitmap != null) {
+                                imageScene.setImageBitmap(bitmap);
+                                imageScene.setVisibility(View.VISIBLE);
+                            } else {
+                                imageScene.setVisibility(View.GONE);
+                            }
+                        } else {
+                            imageScene.setVisibility(View.GONE);
+                        }
+                    } else {
+                        imageScene.setVisibility(View.GONE);
+                    }
+                }
+
+                if (msg.text != null && !msg.text.isEmpty()) {
+                    textMessage.setText(msg.text);
+                    textMessage.setVisibility(View.VISIBLE);
+                } else {
+                    textMessage.setVisibility(View.GONE);
                 }
 
                 cardMessage.setLayoutParams(params);

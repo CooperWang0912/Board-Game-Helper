@@ -2,11 +2,20 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-// Read GEMINI_API_KEY from .env file in project root
+// Read API keys from .env file in project root
 val envFile = rootProject.file(".env")
 val geminiApiKey: String = if (envFile.exists()) {
     envFile.readLines()
         .firstOrNull { it.startsWith("GEMINI_API_KEY=") }
+        ?.substringAfter("=")
+        ?.trim()
+        ?: ""
+} else {
+    ""
+}
+val hfApiKey: String = if (envFile.exists()) {
+    envFile.readLines()
+        .firstOrNull { it.startsWith("HF_API_KEY=") }
         ?.substringAfter("=")
         ?.trim()
         ?: ""
@@ -32,6 +41,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
+        buildConfigField("String", "HF_API_KEY", "\"${hfApiKey}\"")
     }
 
     buildFeatures {

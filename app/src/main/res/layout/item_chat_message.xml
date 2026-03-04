@@ -28,6 +28,17 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="4dp" />
 
+            <ImageView
+                android:id="@+id/image_scene"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone"
+                android:contentDescription="@string/dm_scene_illustration" />
+
             <TextView
                 android:id="@+id/text_message"
                 android:layout_width="wrap_content"

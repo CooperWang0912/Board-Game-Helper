@@ -26,6 +26,11 @@
     <string name="dm_message_hint">What do you do?</string>
     <string name="dm_loading">The DM is thinking\u2026</string>
     <string name="dm_error">Something went wrong. Try again.</string>
+    <string name="dm_illustrate">Illustrate</string>
+    <string name="dm_illustrate_loading">Generating illustration\u2026</string>
+    <string name="dm_no_scene">Send a message first so the DM has a scene to illustrate.</string>
+    <string name="dm_image_error">Could not generate illustration. Try again later.</string>
+    <string name="dm_scene_illustration">Scene illustration</string>
     <string name="dm_character_label">%1$s \u2022 Lvl %2$d %3$s %4$s</string>
     <string name="dm_welcome">Choose a character to begin your adventure!</string>
     <string name="map">Map</string>
