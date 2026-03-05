@@ -60,6 +60,8 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private static final String DM_CHAT_PREFS = "dm_chat_prefs";
     private static final String KEY_CHAT_MESSAGES = "chat_messages_";
     private static final String KEY_LAST_CHARACTER = "last_character";
+    private static final String KEY_RUN_LIST = "run_list_";
+    private static final String KEY_ACTIVE_RUN = "active_run_";
 
     private MaterialCardView cardCharacterInfo;
     private TextView textCharacterInfo;
@@ -69,6 +71,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private TextInputEditText editMessage;
     private MaterialButton btnSend;
     private MaterialButton btnIllustrate;
+    private MaterialButton btnNewRun;
     private TextView textLoading;
 
     private final List<ChatMessage> messages = new ArrayList<>();
@@ -87,6 +90,8 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private String[] backgrounds;
     private String[] alignments;
     private String selectedCharacterName;
+    private JSONObject selectedCharacter;
+    private int activeRunId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +112,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
         btnSend.setOnClickListener(v -> onSendClicked());
         btnIllustrate.setOnClickListener(v -> onIllustrateClicked());
+        btnNewRun.setOnClickListener(v -> onNewRunClicked());
 
         String apiKey = BuildConfig.GEMINI_API_KEY;
         if (apiKey == null || apiKey.isEmpty() || apiKey.equals("your_key_here")) {
@@ -127,6 +133,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         editMessage = findViewById(R.id.edit_message);
         btnSend = findViewById(R.id.btn_send);
         btnIllustrate = findViewById(R.id.btn_illustrate);
+        btnNewRun = findViewById(R.id.btn_new_run);
         textLoading = findViewById(R.id.text_loading);
     }
 
@@ -181,16 +188,8 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
     private void onCharacterSelected(JSONObject character) throws JSONException {
         String name = character.getString("name");
-        int level = character.getInt("level");
-        String race = races[character.getInt("race")];
-        String charClass = classes[character.getInt("class")];
         selectedCharacterName = name;
-
-        // Show character info bar
-        String infoLabel = getString(R.string.dm_character_label, name, level, race, charClass);
-        textCharacterInfo.setText(infoLabel);
-        cardCharacterInfo.setVisibility(View.VISIBLE);
-        layoutInput.setVisibility(View.VISIBLE);
+        selectedCharacter = character;
 
         // Build system prompt and config
         String systemPrompt = buildSystemPrompt(character);
@@ -198,15 +197,43 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 .systemInstruction(Content.fromParts(Part.fromText(systemPrompt)))
                 .build();
 
-        // Try to restore saved chat
-        if (restoreChat()) {
-            return;
-        }
+        // Migrate legacy chat data (pre-run system) into run 1
+        migrateLegacyChat();
 
-        // No saved chat - generate opening scene
-        String openingPrompt = "Begin a new D&D adventure. Introduce the setting and give " + name
-                + " a compelling opening scene. End with a clear prompt for the player's first action.";
-        sendToGemini(openingPrompt, false);
+        // Check for existing runs
+        JSONArray runs = getRunList();
+        if (runs.length() == 0) {
+            // No runs yet — start the first one
+            setupCharacterUI();
+            createAndLoadNewRun();
+        } else {
+            // Load the last active run
+            SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+            activeRunId = prefs.getInt(KEY_ACTIVE_RUN + selectedCharacterName, runs.optInt(0, 1));
+            setupCharacterUI();
+            loadRun(activeRunId);
+        }
+    }
+
+    private void setupCharacterUI() {
+        try {
+            String name = selectedCharacter.getString("name");
+            int level = selectedCharacter.getInt("level");
+            String race = races[selectedCharacter.getInt("race")];
+            String charClass = classes[selectedCharacter.getInt("class")];
+
+            updateCharacterInfoLabel(name, level, race, charClass);
+            cardCharacterInfo.setVisibility(View.VISIBLE);
+            cardCharacterInfo.setOnClickListener(v -> showRunSelectionDialog());
+            layoutInput.setVisibility(View.VISIBLE);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    private void updateCharacterInfoLabel(String name, int level, String race, String charClass) {
+        String infoLabel = getString(R.string.dm_character_label, name, level, race, charClass)
+                + " \u2022 Run " + activeRunId;
+        textCharacterInfo.setText(infoLabel);
     }
 
     private String buildSystemPrompt(JSONObject character) throws JSONException {
@@ -268,6 +295,142 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private String modString(int score) {
         int mod = Math.floorDiv(score - 10, 2);
         return (mod >= 0) ? "+" + mod : String.valueOf(mod);
+    }
+
+    // ========== Run Management ==========
+
+    private JSONArray getRunList() {
+        SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+        String json = prefs.getString(KEY_RUN_LIST + selectedCharacterName, "[]");
+        try {
+            return new JSONArray(json);
+        } catch (JSONException e) {
+            return new JSONArray();
+        }
+    }
+
+    private void saveRunList(JSONArray runs) {
+        SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+        prefs.edit().putString(KEY_RUN_LIST + selectedCharacterName, runs.toString()).apply();
+    }
+
+    private int getNextRunId() {
+        JSONArray runs = getRunList();
+        int maxId = 0;
+        for (int i = 0; i < runs.length(); i++) {
+            maxId = Math.max(maxId, runs.optInt(i, 0));
+        }
+        return maxId + 1;
+    }
+
+    private void migrateLegacyChat() {
+        SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+        String legacyKey = KEY_CHAT_MESSAGES + selectedCharacterName;
+        String legacyData = prefs.getString(legacyKey, null);
+
+        // Only migrate if legacy data exists and no runs exist yet
+        if (legacyData != null && !prefs.contains(KEY_RUN_LIST + selectedCharacterName)) {
+            String runKey = KEY_CHAT_MESSAGES + selectedCharacterName + "_run_1";
+            JSONArray runs = new JSONArray();
+            runs.put(1);
+            prefs.edit()
+                    .putString(runKey, legacyData)
+                    .putString(KEY_RUN_LIST + selectedCharacterName, runs.toString())
+                    .putInt(KEY_ACTIVE_RUN + selectedCharacterName, 1)
+                    .remove(legacyKey)
+                    .apply();
+        }
+    }
+
+    private void createAndLoadNewRun() {
+        int newId = getNextRunId();
+        JSONArray runs = getRunList();
+        runs.put(newId);
+        saveRunList(runs);
+
+        activeRunId = newId;
+        SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+        prefs.edit().putInt(KEY_ACTIVE_RUN + selectedCharacterName, activeRunId).apply();
+
+        // Update UI label with new run number
+        try {
+            String name = selectedCharacter.getString("name");
+            int level = selectedCharacter.getInt("level");
+            String race = races[selectedCharacter.getInt("race")];
+            String charClass = classes[selectedCharacter.getInt("class")];
+            updateCharacterInfoLabel(name, level, race, charClass);
+        } catch (JSONException ignored) {
+        }
+
+        // Clear display and start fresh
+        messages.clear();
+        conversationHistory.clear();
+        chatAdapter.notifyDataSetChanged();
+
+        String openingPrompt = "Begin a new D&D adventure. Introduce the setting and give "
+                + selectedCharacterName
+                + " a compelling opening scene. End with a clear prompt for the player's first action.";
+        sendToGemini(openingPrompt, false);
+    }
+
+    private void loadRun(int runId) {
+        activeRunId = runId;
+        SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
+        prefs.edit().putInt(KEY_ACTIVE_RUN + selectedCharacterName, activeRunId).apply();
+
+        // Update UI label
+        try {
+            String name = selectedCharacter.getString("name");
+            int level = selectedCharacter.getInt("level");
+            String race = races[selectedCharacter.getInt("race")];
+            String charClass = classes[selectedCharacter.getInt("class")];
+            updateCharacterInfoLabel(name, level, race, charClass);
+        } catch (JSONException ignored) {
+        }
+
+        messages.clear();
+        conversationHistory.clear();
+        chatAdapter.notifyDataSetChanged();
+
+        if (!restoreChat()) {
+            // Run exists in list but has no chat data — generate opening
+            String openingPrompt = "Begin a new D&D adventure. Introduce the setting and give "
+                    + selectedCharacterName
+                    + " a compelling opening scene. End with a clear prompt for the player's first action.";
+            sendToGemini(openingPrompt, false);
+        }
+    }
+
+    private void onNewRunClicked() {
+        // Save current chat before switching
+        saveChat();
+        createAndLoadNewRun();
+    }
+
+    private void showRunSelectionDialog() {
+        JSONArray runs = getRunList();
+        if (runs.length() <= 1) return;
+
+        String[] labels = new String[runs.length()];
+        for (int i = 0; i < runs.length(); i++) {
+            int runId = runs.optInt(i, 0);
+            labels[i] = "Run " + runId;
+            if (runId == activeRunId) {
+                labels[i] += " (current)";
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dm_select_run)
+                .setItems(labels, (dialog, which) -> {
+                    int selectedRunId = runs.optInt(which, 1);
+                    if (selectedRunId != activeRunId) {
+                        saveChat();
+                        loadRun(selectedRunId);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     // ========== Messaging ==========
@@ -467,6 +630,10 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
     // ========== Chat Persistence ==========
 
+    private String chatKey() {
+        return KEY_CHAT_MESSAGES + selectedCharacterName + "_run_" + activeRunId;
+    }
+
     private void saveChat() {
         if (selectedCharacterName == null) return;
 
@@ -484,7 +651,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
             SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
             prefs.edit()
-                    .putString(KEY_CHAT_MESSAGES + selectedCharacterName, chatArray.toString())
+                    .putString(chatKey(), chatArray.toString())
                     .putString(KEY_LAST_CHARACTER, selectedCharacterName)
                     .apply();
         } catch (JSONException ignored) {
@@ -495,7 +662,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         if (selectedCharacterName == null) return false;
 
         SharedPreferences prefs = getSharedPreferences(DM_CHAT_PREFS, MODE_PRIVATE);
-        String saved = prefs.getString(KEY_CHAT_MESSAGES + selectedCharacterName, null);
+        String saved = prefs.getString(chatKey(), null);
         if (saved == null) return false;
 
         try {
