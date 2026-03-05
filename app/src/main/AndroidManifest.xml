@@ -36,6 +36,9 @@
             android:name=".DungeonMasterActivity"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".ScenarioCreationActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".MapActivity"
             android:parentActivityName=".MainActivity" />
 

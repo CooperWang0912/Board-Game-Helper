@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.card_dungeon_master).setOnClickListener(v ->
                 startActivity(new Intent(this, DungeonMasterActivity.class)));
 
+        findViewById(R.id.card_scenario_creation).setOnClickListener(v ->
+                startActivity(new Intent(this, ScenarioCreationActivity.class)));
+
         findViewById(R.id.card_map).setOnClickListener(v ->
                 startActivity(new Intent(this, MapActivity.class)));
     }

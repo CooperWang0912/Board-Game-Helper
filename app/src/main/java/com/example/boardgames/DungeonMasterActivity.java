@@ -89,8 +89,12 @@ public class DungeonMasterActivity extends AppCompatActivity {
     private String[] classes;
     private String[] backgrounds;
     private String[] alignments;
+    private static final String SCENARIO_PREFS = "scenario_prefs";
+    private static final String KEY_SCENARIOS = "saved_scenarios";
+
     private String selectedCharacterName;
     private JSONObject selectedCharacter;
+    private JSONObject selectedScenario;
     private int activeRunId;
 
     @Override
@@ -191,8 +195,61 @@ public class DungeonMasterActivity extends AppCompatActivity {
         selectedCharacterName = name;
         selectedCharacter = character;
 
+        // After character is selected, show scenario selection
+        showScenarioSelectionDialog();
+    }
+
+    private void showScenarioSelectionDialog() {
+        SharedPreferences prefs = getSharedPreferences(SCENARIO_PREFS, MODE_PRIVATE);
+        String existing = prefs.getString(KEY_SCENARIOS, "[]");
+
+        try {
+            JSONArray scenarios = new JSONArray(existing);
+
+            // Build list with "No Scenario" as the first option
+            List<String> labels = new ArrayList<>();
+            labels.add(getString(R.string.dm_no_scenario));
+            for (int i = 0; i < scenarios.length(); i++) {
+                JSONObject s = scenarios.getJSONObject(i);
+                String label = s.getString("name");
+                String timePeriod = s.optString("timePeriod", "");
+                if (!timePeriod.isEmpty()) {
+                    label += " (" + timePeriod + ")";
+                }
+                labels.add(label);
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dm_select_scenario)
+                    .setItems(labels.toArray(new String[0]), (dialog, which) -> {
+                        try {
+                            if (which == 0) {
+                                // No scenario selected
+                                selectedScenario = null;
+                            } else {
+                                selectedScenario = scenarios.getJSONObject(which - 1);
+                            }
+                            onScenarioSelected();
+                        } catch (JSONException e) {
+                            Toast.makeText(this, R.string.dm_error, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        } catch (JSONException e) {
+            // If scenarios can't be loaded, proceed without one
+            selectedScenario = null;
+            try {
+                onScenarioSelected();
+            } catch (JSONException ex) {
+                Toast.makeText(this, R.string.dm_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void onScenarioSelected() throws JSONException {
         // Build system prompt and config
-        String systemPrompt = buildSystemPrompt(character);
+        String systemPrompt = buildSystemPrompt(selectedCharacter);
         geminiConfig = GenerateContentConfig.builder()
                 .systemInstruction(Content.fromParts(Part.fromText(systemPrompt)))
                 .build();
@@ -289,7 +346,76 @@ public class DungeonMasterActivity extends AppCompatActivity {
                 + "- Keep responses concise (2-4 short paragraphs max).\n"
                 + "- Always end with a clear prompt for the player's next action.\n"
                 + "- Track the character's HP and mention it when damage is taken or healed.\n"
-                + "- Use the character's class abilities, race traits, and background appropriately.\n";
+                + "- Use the character's class abilities, race traits, and background appropriately.\n"
+                + buildScenarioSection();
+    }
+
+    private String buildScenarioSection() {
+        if (selectedScenario == null) return "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nSCENARIO SETTING:\n");
+
+        String timePeriod = selectedScenario.optString("timePeriod", "");
+        if (!timePeriod.isEmpty()) {
+            sb.append("Time Period: ").append(timePeriod).append("\n");
+        }
+
+        String setting = selectedScenario.optString("setting", "");
+        if (!setting.isEmpty()) {
+            sb.append("Setting: ").append(setting).append("\n");
+        }
+
+        String characters = selectedScenario.optString("characters", "");
+        if (!characters.isEmpty()) {
+            sb.append("Key Characters/NPCs: ").append(characters).append("\n");
+        }
+
+        String plotHook = selectedScenario.optString("plotHook", "");
+        if (!plotHook.isEmpty()) {
+            sb.append("Plot Hook: ").append(plotHook).append("\n");
+        }
+
+        sb.append("- Incorporate the scenario setting above into the adventure.\n");
+        sb.append("- Use the specified time period, setting, and characters as the foundation for the story.\n");
+
+        return sb.toString();
+    }
+
+    private String buildOpeningPrompt() {
+        if (selectedScenario == null) {
+            return "Begin a new D&D adventure. Introduce the setting and give "
+                    + selectedCharacterName
+                    + " a compelling opening scene. End with a clear prompt for the player's first action.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Begin a new D&D adventure for ").append(selectedCharacterName).append(".");
+
+        String timePeriod = selectedScenario.optString("timePeriod", "");
+        if (!timePeriod.isEmpty()) {
+            sb.append(" The adventure takes place during ").append(timePeriod).append(".");
+        }
+
+        String setting = selectedScenario.optString("setting", "");
+        if (!setting.isEmpty()) {
+            sb.append(" The setting is ").append(setting).append(".");
+        }
+
+        String characters = selectedScenario.optString("characters", "");
+        if (!characters.isEmpty()) {
+            sb.append(" Key characters include: ").append(characters).append(".");
+        }
+
+        String plotHook = selectedScenario.optString("plotHook", "");
+        if (!plotHook.isEmpty()) {
+            sb.append(" The story begins with: ").append(plotHook).append(".");
+        }
+
+        sb.append(" Introduce the setting vividly and give the player a compelling opening scene.");
+        sb.append(" End with a clear prompt for the player's first action.");
+
+        return sb.toString();
     }
 
     private String modString(int score) {
@@ -367,10 +493,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
         conversationHistory.clear();
         chatAdapter.notifyDataSetChanged();
 
-        String openingPrompt = "Begin a new D&D adventure. Introduce the setting and give "
-                + selectedCharacterName
-                + " a compelling opening scene. End with a clear prompt for the player's first action.";
-        sendToGemini(openingPrompt, false);
+        sendToGemini(buildOpeningPrompt(), false);
     }
 
     private void loadRun(int runId) {
@@ -394,10 +517,7 @@ public class DungeonMasterActivity extends AppCompatActivity {
 
         if (!restoreChat()) {
             // Run exists in list but has no chat data — generate opening
-            String openingPrompt = "Begin a new D&D adventure. Introduce the setting and give "
-                    + selectedCharacterName
-                    + " a compelling opening scene. End with a clear prompt for the player's first action.";
-            sendToGemini(openingPrompt, false);
+            sendToGemini(buildOpeningPrompt(), false);
         }
     }
 

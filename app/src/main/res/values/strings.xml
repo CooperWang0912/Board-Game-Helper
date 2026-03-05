@@ -107,6 +107,32 @@
     <string name="cc_select_character">Select a Character</string>
     <string name="cc_delete">Delete</string>
 
+    <!-- Scenario Creation -->
+    <string name="sc_title">Scenario Creator</string>
+    <string name="sc_desc">Design custom adventure settings</string>
+    <string name="sc_details">Scenario Details</string>
+    <string name="sc_name_hint">Scenario Name</string>
+    <string name="sc_time_period_hint">Time Period (e.g. Medieval era, Year 1400)</string>
+    <string name="sc_setting_hint">Setting (e.g. Dark forest, Coastal city)</string>
+    <string name="sc_characters_story">Characters &amp; Story</string>
+    <string name="sc_characters_hint">Characters / NPCs (allies, enemies, etc.)</string>
+    <string name="sc_plot_hook_hint">Plot Hook (opening situation or quest)</string>
+    <string name="sc_save">Save</string>
+    <string name="sc_load">Load</string>
+    <string name="sc_save_success_title">Scenario Saved</string>
+    <string name="sc_save_success">%s has been saved successfully!</string>
+    <string name="sc_save_failed_title">Save Failed</string>
+    <string name="sc_save_failed">An error occurred while saving the scenario.</string>
+    <string name="sc_name_required">Please enter a scenario name before saving.</string>
+    <string name="sc_load_success_title">Scenario Loaded</string>
+    <string name="sc_load_success">%s has been loaded successfully!</string>
+    <string name="sc_load_failed">An error occurred while loading the scenario.</string>
+    <string name="sc_no_saved">No saved scenarios found</string>
+    <string name="sc_select_scenario">Select a Scenario</string>
+    <string name="sc_delete">Delete</string>
+    <string name="dm_select_scenario">Select a Scenario</string>
+    <string name="dm_no_scenario">No Scenario (DM decides)</string>
+
     <!-- Race options -->
     <string-array name="cc_races">
         <item>Human</item>
