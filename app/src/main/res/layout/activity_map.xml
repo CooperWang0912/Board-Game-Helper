@@ -108,6 +108,17 @@
             app:tint="#000000" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_character"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/map_add_character"
+            android:visibility="gone"
+            app:backgroundTint="#FFFFFF"
+            app:srcCompat="@drawable/ic_person_pin"
+            app:tint="#000000" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_point"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

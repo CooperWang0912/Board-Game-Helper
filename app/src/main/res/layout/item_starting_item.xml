@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Item Name -->
+    <EditText
+        android:id="@+id/edit_item_name"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:hint="@string/cc_item_name_hint"
+        android:inputType="textCapWords"
+        android:textSize="14sp" />
+
+    <!-- Item Description -->
+    <EditText
+        android:id="@+id/edit_item_description"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="1.2"
+        android:layout_marginStart="8dp"
+        android:hint="@string/cc_item_desc_hint"
+        android:inputType="text"
+        android:textSize="14sp" />
+
+    <!-- Durability -->
+    <EditText
+        android:id="@+id/edit_item_durability"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="0.6"
+        android:layout_marginStart="8dp"
+        android:hint="@string/cc_item_durability_hint"
+        android:inputType="number"
+        android:textSize="14sp" />
+
+    <!-- Delete Button -->
+    <ImageButton
+        android:id="@+id/btn_delete_item"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="4dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cc_delete"
+        android:scaleType="centerInside" />
+
+</LinearLayout>

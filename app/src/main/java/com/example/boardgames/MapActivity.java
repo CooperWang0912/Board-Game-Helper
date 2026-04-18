@@ -2,10 +2,15 @@ package com.example.boardgames;
 
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -23,9 +28,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -33,6 +43,7 @@ public class MapActivity extends AppCompatActivity {
     private static final String KEY_MAP_URI = "map_uri";
     private static final String KEY_MAP_POINTS = "map_points";
     private static final String KEY_MAP_DRAWINGS = "map_drawings";
+    private static final int MAX_IMAGE_DIMENSION = 1024;
 
     private static final int[] PALETTE_COLORS = {
             0xFFFF0000, // Red
@@ -53,12 +64,14 @@ public class MapActivity extends AppCompatActivity {
     private LinearLayout emptyState;
     private LinearLayout zoomControls;
     private FloatingActionButton fabAddPoint;
+    private FloatingActionButton fabAddCharacter;
     private FloatingActionButton fabImportMap;
     private FloatingActionButton fabDraw;
     private FloatingActionButton fabErase;
     private FloatingActionButton fabColorPicker;
-    private ActivityResultLauncher<String[]> imagePickerLauncher;
+    private ActivityResultLauncher<String> imagePickerLauncher;
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Uri currentMapUri;
     private int currentDrawColor = 0xFFFF0000; // Default red
 
@@ -76,24 +89,26 @@ public class MapActivity extends AppCompatActivity {
         emptyState = findViewById(R.id.empty_state);
         zoomControls = findViewById(R.id.zoom_controls);
         fabAddPoint = findViewById(R.id.fab_add_point);
+        fabAddCharacter = findViewById(R.id.fab_add_character);
         fabImportMap = findViewById(R.id.fab_import_map);
         fabDraw = findViewById(R.id.fab_draw);
         fabErase = findViewById(R.id.fab_erase);
         fabColorPicker = findViewById(R.id.fab_color_picker);
 
         imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.OpenDocument(),
+                new ActivityResultContracts.GetContent(),
                 this::onImagePicked
         );
 
         fabImportMap.setOnClickListener(v ->
-                imagePickerLauncher.launch(new String[]{"image/*"})
+                imagePickerLauncher.launch("image/*")
         );
 
         findViewById(R.id.fab_zoom_in).setOnClickListener(v -> mapImageView.zoomIn());
         findViewById(R.id.fab_zoom_out).setOnClickListener(v -> mapImageView.zoomOut());
 
         fabAddPoint.setOnClickListener(v -> togglePlacementMode());
+        fabAddCharacter.setOnClickListener(v -> toggleCharacterPlacementMode());
 
         fabDraw.setOnClickListener(v -> toggleDrawMode());
         fabErase.setOnClickListener(v -> toggleEraseMode());
@@ -104,6 +119,7 @@ public class MapActivity extends AppCompatActivity {
         fabColorPicker.setOnClickListener(v -> showColorPickerDialog());
 
         mapImageView.setOnPointPlacedListener((imgX, imgY) -> showLabelDialog(imgX, imgY));
+        mapImageView.setOnCharacterPlacedListener((imgX, imgY) -> showCharacterLabelDialog(imgX, imgY));
 
         mapImageView.setOnPointTappedListener(point -> showDeleteDialog(point));
 
@@ -122,6 +138,10 @@ public class MapActivity extends AppCompatActivity {
         if (mapImageView.getInteractionMode() != MapImageView.InteractionMode.NAVIGATE) {
             resetDrawEraseMode();
         }
+        // Exit character placement if active
+        if (mapImageView.isCharacterPlacementMode()) {
+            exitCharacterPlacementMode();
+        }
 
         boolean entering = !mapImageView.isPlacementMode();
         mapImageView.setPlacementMode(entering);
@@ -139,10 +159,39 @@ public class MapActivity extends AppCompatActivity {
         setFabActive(fabAddPoint, false);
     }
 
-    private void toggleDrawMode() {
-        // Exit placement mode if active
+    private void toggleCharacterPlacementMode() {
+        // Exit draw/erase if active
+        if (mapImageView.getInteractionMode() != MapImageView.InteractionMode.NAVIGATE) {
+            resetDrawEraseMode();
+        }
+        // Exit point placement if active
         if (mapImageView.isPlacementMode()) {
             exitPlacementMode();
+        }
+
+        boolean entering = !mapImageView.isCharacterPlacementMode();
+        mapImageView.setCharacterPlacementMode(entering);
+
+        if (entering) {
+            setFabActive(fabAddCharacter, true);
+            Toast.makeText(this, R.string.map_character_placement_mode, Toast.LENGTH_SHORT).show();
+        } else {
+            setFabActive(fabAddCharacter, false);
+        }
+    }
+
+    private void exitCharacterPlacementMode() {
+        mapImageView.setCharacterPlacementMode(false);
+        setFabActive(fabAddCharacter, false);
+    }
+
+    private void toggleDrawMode() {
+        // Exit placement modes if active
+        if (mapImageView.isPlacementMode()) {
+            exitPlacementMode();
+        }
+        if (mapImageView.isCharacterPlacementMode()) {
+            exitCharacterPlacementMode();
         }
 
         if (mapImageView.getInteractionMode() == MapImageView.InteractionMode.DRAW) {
@@ -159,9 +208,12 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void toggleEraseMode() {
-        // Exit placement mode if active
+        // Exit placement modes if active
         if (mapImageView.isPlacementMode()) {
             exitPlacementMode();
+        }
+        if (mapImageView.isCharacterPlacementMode()) {
+            exitCharacterPlacementMode();
         }
 
         if (mapImageView.getInteractionMode() == MapImageView.InteractionMode.ERASE) {
@@ -277,6 +329,24 @@ public class MapActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showCharacterLabelDialog(float imgX, float imgY) {
+        EditText input = new EditText(this);
+        input.setHint(R.string.map_character_label_hint);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.map_enter_character_name)
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String label = input.getText().toString().trim();
+                    if (label.isEmpty()) label = "Character";
+                    mapImageView.addCharacter(imgX, imgY, label);
+                    exitCharacterPlacementMode();
+                })
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> exitCharacterPlacementMode())
+                .setOnCancelListener(dialog -> exitCharacterPlacementMode())
+                .show();
+    }
+
     private void showDeleteDialog(MapImageView.MapPoint point) {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.map_delete_point_title)
@@ -290,46 +360,111 @@ public class MapActivity extends AppCompatActivity {
     private void onImagePicked(Uri uri) {
         if (uri == null) return;
 
-        try {
-            // Take persistable read permission so the URI survives restarts
-            getContentResolver().takePersistableUriPermission(uri,
-                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        } catch (SecurityException ignored) {
-            // Not all providers support persistable permissions; that's fine
-        }
+        loadImageFromUri(uri, success -> {
+            if (success) {
+                copyToInternalStorage();
+            }
+        });
+    }
 
-        if (loadImageFromUri(uri)) {
-            currentMapUri = uri;
-            saveMapUri(uri);
+    private void copyToInternalStorage() {
+        if (!(mapImageView.getDrawable() instanceof BitmapDrawable)) return;
+        Bitmap bitmap = ((BitmapDrawable) mapImageView.getDrawable()).getBitmap();
+        if (bitmap == null) return;
+
+        executor.execute(() -> {
+            File file = new File(getFilesDir(), "map_image.png");
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                Uri fileUri = Uri.fromFile(file);
+                runOnUiThread(() -> {
+                    currentMapUri = fileUri;
+                    saveMapUri(fileUri);
+                });
+            } catch (IOException ignored) {
+            }
+        });
+    }
+
+    private interface OnImageLoadedCallback {
+        void onResult(boolean success);
+    }
+
+    private void loadImageFromUri(Uri uri, OnImageLoadedCallback callback) {
+        executor.execute(() -> {
+            Bitmap bitmap = decodeBitmapFromUri(uri);
+            runOnUiThread(() -> {
+                if (bitmap != null) {
+                    applyBitmap(bitmap);
+                    if (callback != null) callback.onResult(true);
+                } else {
+                    Toast.makeText(this, R.string.map_load_failed, Toast.LENGTH_SHORT).show();
+                    if (callback != null) callback.onResult(false);
+                }
+            });
+        });
+    }
+
+    private Bitmap decodeBitmapFromUri(Uri uri) {
+        try {
+            // First pass: read image dimensions without loading pixels
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            try (InputStream boundsStream = getContentResolver().openInputStream(uri)) {
+                if (boundsStream == null) return null;
+                BitmapFactory.decodeStream(boundsStream, null, opts);
+            }
+
+            if (opts.outWidth <= 0 || opts.outHeight <= 0) {
+                return null;
+            }
+
+            // Downsample so the longest edge fits within MAX_IMAGE_DIMENSION
+            int inSampleSize = 1;
+            int w = opts.outWidth;
+            int h = opts.outHeight;
+            while (w / inSampleSize > MAX_IMAGE_DIMENSION
+                    || h / inSampleSize > MAX_IMAGE_DIMENSION) {
+                inSampleSize *= 2;
+            }
+
+            // Second pass: decode the downsampled bitmap with reduced color depth
+            opts.inJustDecodeBounds = false;
+            opts.inSampleSize = inSampleSize;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            try (InputStream pixelStream = getContentResolver().openInputStream(uri)) {
+                if (pixelStream == null) return null;
+                return BitmapFactory.decodeStream(pixelStream, null, opts);
+            }
+        } catch (OutOfMemoryError | Exception e) {
+            return null;
         }
     }
 
-    private boolean loadImageFromUri(Uri uri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            if (inputStream != null) {
-                android.graphics.drawable.Drawable drawable =
-                        android.graphics.drawable.Drawable.createFromStream(inputStream, uri.toString());
-                inputStream.close();
+    private void applyBitmap(Bitmap bitmap) {
+        // Save image dimensions so DungeonMasterActivity can convert percentage coords
+        getPrefs().edit()
+                .putInt("map_image_width", bitmap.getWidth())
+                .putInt("map_image_height", bitmap.getHeight())
+                .apply();
 
-                if (drawable != null) {
-                    mapImageView.setImageDrawable(drawable);
-                    mapImageView.setVisibility(View.VISIBLE);
-                    emptyState.setVisibility(View.GONE);
-                    zoomControls.setVisibility(View.VISIBLE);
-                    fabAddPoint.setVisibility(View.VISIBLE);
-                    fabDraw.setVisibility(View.VISIBLE);
-                    fabErase.setVisibility(View.VISIBLE);
-                    fabColorPicker.setVisibility(View.VISIBLE);
-                    return true;
-                } else {
-                    Toast.makeText(this, R.string.map_load_failed, Toast.LENGTH_SHORT).show();
-                }
+        // Recycle previous bitmap to free memory before setting new one
+        if (mapImageView.getDrawable() instanceof BitmapDrawable) {
+            Bitmap old = ((BitmapDrawable) mapImageView.getDrawable()).getBitmap();
+            if (old != null && !old.isRecycled()) {
+                mapImageView.setImageDrawable(null);
+                old.recycle();
             }
-        } catch (Exception e) {
-            Toast.makeText(this, R.string.map_load_failed, Toast.LENGTH_SHORT).show();
         }
-        return false;
+        mapImageView.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+        mapImageView.setVisibility(View.VISIBLE);
+        emptyState.setVisibility(View.GONE);
+        zoomControls.setVisibility(View.VISIBLE);
+        fabAddPoint.setVisibility(View.VISIBLE);
+        fabAddCharacter.setVisibility(View.VISIBLE);
+        fabDraw.setVisibility(View.VISIBLE);
+        fabErase.setVisibility(View.VISIBLE);
+        fabColorPicker.setVisibility(View.VISIBLE);
     }
 
     // Save / Load
@@ -351,6 +486,7 @@ public class MapActivity extends AppCompatActivity {
                 obj.put("x", p.imgX);
                 obj.put("y", p.imgY);
                 obj.put("label", p.label);
+                obj.put("isCharacter", p.isCharacter);
                 pointsArr.put(obj);
             }
 
@@ -393,7 +529,8 @@ public class MapActivity extends AppCompatActivity {
                 result.add(new MapImageView.MapPoint(
                         (float) obj.getDouble("x"),
                         (float) obj.getDouble("y"),
-                        obj.getString("label")
+                        obj.getString("label"),
+                        obj.optBoolean("isCharacter", false)
                 ));
             }
         } catch (Exception ignored) {
@@ -434,18 +571,58 @@ public class MapActivity extends AppCompatActivity {
         if (uriStr == null) return;
 
         Uri uri = Uri.parse(uriStr);
-        if (loadImageFromUri(uri)) {
-            currentMapUri = uri;
-            List<MapImageView.MapPoint> savedPoints = loadPoints();
-            if (!savedPoints.isEmpty()) {
-                mapImageView.setPoints(savedPoints);
+        loadImageFromUri(uri, success -> {
+            if (success) {
+                currentMapUri = uri;
+                List<MapImageView.MapPoint> savedPoints = loadPoints();
+                if (!savedPoints.isEmpty()) {
+                    mapImageView.setPoints(savedPoints);
+                }
+                List<MapImageView.DrawStroke> savedStrokes = loadDrawings();
+                if (!savedStrokes.isEmpty()) {
+                    mapImageView.setStrokes(savedStrokes);
+                }
+                mapImageView.markSaved();
+            } else {
+                // Image no longer accessible — clear the saved URI so we don't retry every launch
+                getPrefs().edit().remove(KEY_MAP_URI).apply();
             }
-            List<MapImageView.DrawStroke> savedStrokes = loadDrawings();
-            if (!savedStrokes.isEmpty()) {
-                mapImageView.setStrokes(savedStrokes);
-            }
-            mapImageView.markSaved();
+        });
+    }
+
+    // Options menu
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_clear_all) {
+            showClearAllDialog();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showClearAllDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.map_clear_all_title)
+                .setMessage(R.string.map_clear_all_message)
+                .setPositiveButton(R.string.cc_delete, (dialog, which) -> {
+                    mapImageView.clearAll();
+                    // Also clear saved data so changes persist immediately
+                    getPrefs().edit()
+                            .remove(KEY_MAP_POINTS)
+                            .remove(KEY_MAP_DRAWINGS)
+                            .apply();
+                    mapImageView.markSaved();
+                    Toast.makeText(this, R.string.map_all_cleared, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     // Exit handling
@@ -456,8 +633,11 @@ public class MapActivity extends AppCompatActivity {
                     .setTitle(R.string.map_save_prompt_title)
                     .setMessage(R.string.map_save_prompt_message)
                     .setPositiveButton(R.string.map_save, (dialog, which) -> {
-                        saveMapData();
-                        finish();
+                        try {
+                            saveMapData();
+                        } finally {
+                            finish();
+                        }
                     })
                     .setNegativeButton(R.string.map_discard, (dialog, which) -> finish())
                     .setNeutralButton(android.R.string.cancel, null)
@@ -471,5 +651,11 @@ public class MapActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         handleExit();
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executor.shutdownNow();
     }
 }

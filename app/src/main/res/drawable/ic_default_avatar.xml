@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Gold outer ring -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M24,0 C37.25,0 48,10.75 48,24 C48,37.25 37.25,48 24,48 C10.75,48 0,37.25 0,24 C0,10.75 10.75,0 24,0 Z M24,3 C12.4,3 3,12.4 3,24 C3,35.6 12.4,45 24,45 C35.6,45 45,35.6 45,24 C45,12.4 35.6,3 24,3 Z" />
+    <!-- Blue circle background -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M24,3 C35.6,3 45,12.4 45,24 C45,35.6 35.6,45 24,45 C12.4,45 3,35.6 3,24 C3,12.4 12.4,3 24,3 Z" />
+    <!-- Person head (white) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,12 C27.31,12 30,14.69 30,18 C30,21.31 27.31,24 24,24 C20.69,24 18,21.31 18,18 C18,14.69 20.69,12 24,12 Z" />
+    <!-- Person shoulders/body (white), clipped by circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,27 C30.63,27 36,29.69 36,33 L36,36 C33.2,40.1 28.9,43 24,43 C19.1,43 14.8,40.1 12,36 L12,33 C12,29.69 17.37,27 24,27 Z" />
+</vector>

@@ -1,0 +1,113 @@
+D&D 5th Edition — Core Mechanics Reference (SRD Summary)
+
+========== ABILITY CHECKS ==========
+Roll d20 + ability modifier. Compare to Difficulty Class (DC).
+  DC 5 = Very Easy, DC 10 = Easy, DC 15 = Medium, DC 20 = Hard, DC 25 = Very Hard, DC 30 = Nearly Impossible.
+Advantage: Roll 2d20, take the higher result.
+Disadvantage: Roll 2d20, take the lower result.
+Proficiency bonus: +2 (levels 1-4), +3 (5-8), +4 (9-12), +5 (13-16), +6 (17-20).
+Contests: Both sides roll d20 + modifier; higher total wins. Ties favor the defender.
+
+========== SKILLS ==========
+STR: Athletics.
+DEX: Acrobatics, Sleight of Hand, Stealth.
+INT: Arcana, History, Investigation, Nature, Religion.
+WIS: Animal Handling, Insight, Medicine, Perception, Survival.
+CHA: Deception, Intimidation, Performance, Persuasion.
+Passive check = 10 + all modifiers that normally apply.
+
+========== COMBAT ==========
+Initiative: Each combatant rolls d20 + DEX modifier. Act in descending order.
+Surprise: Surprised creatures cannot move or take actions on their first turn, and cannot take reactions until that turn ends.
+
+Attack roll: d20 + ability modifier + proficiency bonus (if proficient).
+  Melee: usually STR modifier. Finesse weapons: STR or DEX.
+  Ranged: usually DEX modifier. Thrown weapons: STR or DEX.
+Hit if attack roll >= target AC.
+
+Critical hit: Natural 20 — always hits. Roll all damage dice twice, then add modifiers.
+Critical miss: Natural 1 — always misses.
+
+Damage: Roll weapon/spell damage dice + ability modifier.
+  Melee damage: + STR modifier (or DEX for finesse).
+  Ranged damage: + DEX modifier.
+
+Two-weapon fighting: When attacking with a light melee weapon in one hand, use a bonus action to attack with a different light melee weapon in the other hand. Do not add ability modifier to the bonus attack's damage (unless modifier is negative).
+
+Opportunity attacks: When a creature you can see moves out of your reach, you can use your reaction to make one melee attack against it. Does not trigger if the creature Disengages or teleports.
+
+========== ACTIONS IN COMBAT ==========
+Attack: Make one melee or ranged attack (more with Extra Attack feature).
+Cast a Spell: Cast a spell with a casting time of 1 action.
+Dash: Gain extra movement equal to your speed for the current turn.
+Disengage: Your movement doesn't provoke opportunity attacks for the rest of the turn.
+Dodge: Until your next turn, any attack roll against you has disadvantage if you can see the attacker, and you make DEX saving throws with advantage. Lost if incapacitated or speed drops to 0.
+Help: Give an ally advantage on their next ability check or attack roll against a target within 5 ft of you.
+Hide: Make a DEX (Stealth) check to become hidden.
+Ready: Prepare an action to trigger on a specific condition. Uses your reaction when triggered.
+Search: Make a WIS (Perception) or INT (Investigation) check to find something.
+Use an Object: Interact with a second object or use an object that requires an action.
+
+Bonus action: Some features and spells grant bonus actions. One per turn maximum.
+Reaction: One per round. Resets at the start of your turn. Used for opportunity attacks, some spells (Shield, Counterspell), and readied actions.
+
+========== CONDITIONS ==========
+Blinded: Cannot see. Auto-fail sight-based checks. Attacks against have advantage, attacks by have disadvantage.
+Charmed: Cannot attack the charmer. Charmer has advantage on social checks against the creature.
+Deafened: Cannot hear. Auto-fail hearing-based checks.
+Frightened: Disadvantage on ability checks and attacks while the source of fear is in line of sight. Cannot willingly move closer to the source.
+Grappled: Speed becomes 0. Ends if grappler is incapacitated or the creature is moved out of reach.
+Incapacitated: Cannot take actions or reactions.
+Invisible: Impossible to see without magic or special sense. Attacks against have disadvantage, attacks by have advantage.
+Paralyzed: Incapacitated, cannot move or speak. Auto-fail STR and DEX saves. Attacks against have advantage. Hits from within 5 ft are critical hits.
+Petrified: Transformed to stone. Incapacitated, unaware. Attacks against have advantage. Auto-fail STR and DEX saves. Resistance to all damage. Immune to poison and disease.
+Poisoned: Disadvantage on attack rolls and ability checks.
+Prone: Disadvantage on attacks. Melee attacks against have advantage, ranged attacks against have disadvantage. Must spend half movement to stand up.
+Restrained: Speed 0. Attacks against have advantage, attacks by have disadvantage. Disadvantage on DEX saves.
+Stunned: Incapacitated, cannot move, can only speak falteringly. Auto-fail STR and DEX saves. Attacks against have advantage.
+Unconscious: Incapacitated, cannot move or speak, unaware. Drop whatever held, fall prone. Auto-fail STR and DEX saves. Attacks against have advantage. Hits from within 5 ft are critical hits.
+
+========== HIT POINTS & DEATH ==========
+Damage types: Acid, Bludgeoning, Cold, Fire, Force, Lightning, Necrotic, Piercing, Poison, Psychic, Radiant, Slashing, Thunder.
+Resistance: Take half damage of that type.
+Vulnerability: Take double damage of that type.
+Immunity: Take no damage of that type.
+
+Dropping to 0 HP: Fall unconscious and begin making death saving throws.
+Death saving throws: Roll d20 at start of each turn. 10+ = success, 9 or lower = failure. Three successes = stabilize (unconscious but no longer dying). Three failures = death. Natural 20 = regain 1 HP. Natural 1 = two failures.
+Instant death: If remaining damage after reaching 0 HP equals or exceeds max HP, die instantly.
+Stabilizing: A stable creature regains 1 HP after 1d4 hours. Medicine check DC 10 to stabilize another creature.
+Healing: Any healing on a creature at 0 HP brings them back to consciousness. Healing starts from 0.
+
+========== RESTING ==========
+Short rest: At least 1 hour of downtime. Can spend Hit Dice to recover HP: roll each hit die + CON modifier.
+Long rest: At least 8 hours (sleep at least 6). Regain all lost HP. Regain spent Hit Dice up to half your total (minimum 1). Regain all spell slots. Cannot benefit from more than one long rest per 24 hours.
+
+========== MOVEMENT ==========
+Speed: Typically 25-30 ft per turn.
+Difficult terrain: Each foot costs 1 extra foot of movement (effectively half speed).
+Climbing/Swimming: Each foot costs 1 extra foot (2 extra in difficult terrain) unless the creature has a climbing/swimming speed.
+Crawling: Each foot costs 1 extra foot of movement.
+Jumping (long): Running start = STR score in feet. Standing = half that.
+Jumping (high): Running start = 3 + STR modifier feet. Standing = half that.
+Falling: Take 1d6 bludgeoning damage per 10 feet fallen, max 20d6. Land prone.
+
+========== COVER ==========
+Half cover (+2 AC and DEX saves): Obstacle blocks at least half the body (low wall, furniture, another creature).
+Three-quarters cover (+5 AC and DEX saves): About three-quarters blocked (portcullis, arrow slit, thick tree).
+Total cover: Completely concealed. Cannot be targeted directly by attacks or spells.
+
+========== SAVING THROWS ==========
+Roll d20 + ability modifier + proficiency bonus (if proficient in that save).
+Each class grants proficiency in two saving throws.
+Common saves: DEX (area effects, traps), CON (poison, endurance), WIS (mental effects, charm).
+
+========== SPELLCASTING ==========
+Spell slots: Expended when casting a spell of that level. Regained on long rest (short rest for Warlocks).
+Cantrips: Level 0 spells. Cast at will without using a spell slot.
+Spell save DC = 8 + proficiency bonus + spellcasting ability modifier.
+Spell attack modifier = proficiency bonus + spellcasting ability modifier.
+Concentration: Some spells require concentration. Taking damage forces a CON save (DC = 10 or half damage taken, whichever is higher). Fail = spell ends. Only one concentration spell at a time. Casting another concentration spell ends the first.
+Components: V = verbal (speaking), S = somatic (gestures), M = material (specific items or a component pouch/focus).
+Ritual casting: Spells with the ritual tag can be cast as rituals by adding 10 minutes to the casting time, without expending a spell slot (if the class allows ritual casting).
+Upcasting: Some spells gain additional effects when cast using a higher-level slot.

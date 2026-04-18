@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Board Games</string>
-    <string name="choose_game">Start Your Adventure Now!</string>
+    <string name="choose_game">Adventure Awaits!</string>
     <string name="dice_roll">Dice Roll</string>
     <string name="dice_roll_desc">Roll the dice and test your luck</string>
     <string name="dice_roll_placeholder">Dice Roll coming soon!</string>
@@ -16,12 +16,15 @@
     <string name="character_creation">Character Creation</string>
     <string name="character_creation_desc">Build and customize your character</string>
     <string name="character_creation_placeholder">Character Creation coming soon!</string>
-    <string name="dungeon_master">Dungeon Master</string>
-    <string name="dungeon_master_desc">Lead the adventure as the Dungeon Master</string>
+    <string name="dungeon_master">AI Dungeon Master</string>
+    <string name="dungeon_master_desc">Play the game with an AI as your Dungeon Master</string>
     <string name="dungeon_master_placeholder">Dungeon Master coming soon!</string>
     <string name="dm_select_character">Select Your Character</string>
     <string name="dm_no_characters">No saved characters found. Create a character first in Character Creation.</string>
-    <string name="dm_no_api_key">Gemini API key not configured. Add your key to the .env file in the project root.</string>
+    <string name="dm_no_api_key">Gemini API key not configured. Set your key in API Settings on the main screen.</string>
+    <string name="dm_no_network">No internet connection. Connect to the internet to use AI features.</string>
+    <string name="dm_no_image_api_key">Image generation API key not configured. Set it in API Settings on the main screen.</string>
+    <string name="dm_map_no_longer_loaded">Map was removed. Map access has been disabled.</string>
     <string name="dm_send">Send</string>
     <string name="dm_message_hint">What do you do?</string>
     <string name="dm_loading">The DM is thinking\u2026</string>
@@ -36,6 +39,11 @@
     <string name="dm_new_run">New Run</string>
     <string name="dm_select_run">Select Run</string>
     <string name="dm_welcome">Choose a character to begin your adventure!</string>
+    <string name="dm_map_toggle">Toggle map access</string>
+    <string name="dm_map_enabled">Map access enabled — the DM can see and modify the map</string>
+    <string name="dm_map_disabled">Map access disabled</string>
+    <string name="dm_map_action">Map: %s</string>
+    <string name="dm_no_map">No map loaded. Import a map image in the Map screen first.</string>
     <string name="map">Map</string>
     <string name="map_desc">View and explore the game world map</string>
     <string name="map_placeholder">Map coming soon!</string>
@@ -46,6 +54,10 @@
     <string name="map_zoom_in">Zoom in</string>
     <string name="map_zoom_out">Zoom out</string>
     <string name="map_add_point">Add point</string>
+    <string name="map_add_character">Place character</string>
+    <string name="map_character_placement_mode">Tap on the map to place a character</string>
+    <string name="map_character_label_hint">Character name</string>
+    <string name="map_enter_character_name">Enter character name</string>
     <string name="map_enter_label">Enter label</string>
     <string name="map_label_hint">Point label</string>
     <string name="map_delete_point_title">Delete point?</string>
@@ -65,8 +77,28 @@
     <string name="map_drawings_cleared">All drawings cleared</string>
     <string name="map_pick_color">Pick a color</string>
     <string name="map_data_saved">Map data saved</string>
+    <string name="map_clear_all">Clear All</string>
+    <string name="map_clear_all_title">Clear everything?</string>
+    <string name="map_clear_all_message">This will remove all points, characters, and drawings from the map.</string>
+    <string name="map_all_cleared">All map data cleared</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="light_mode">Light Mode</string>
+    <string name="settings_button">Settings</string>
+    <string name="settings_title">Settings</string>
+
+    <!-- API Key Settings -->
+    <string name="api_settings">API Settings</string>
+    <string name="api_gemini_title">Gemini API Key</string>
+    <string name="api_gemini_hint">Enter your Gemini API key</string>
+    <string name="api_image_title">Image Generation API Key</string>
+    <string name="api_image_hint">Enter your HuggingFace API key</string>
+    <string name="api_key_save">Save</string>
+    <string name="api_key_clear">Clear</string>
+    <string name="api_key_saved">API key saved</string>
+    <string name="api_key_cleared">API key cleared</string>
+    <string name="api_key_empty">Please enter an API key first</string>
+    <string name="api_status_configured">Configured</string>
+    <string name="api_status_not_configured">Not configured</string>
 
     <!-- Character Creation -->
     <string name="cc_basic_info">Basic Info</string>
@@ -86,6 +118,7 @@
     <string name="cc_cha">Charisma (CHA)</string>
     <string name="cc_combat_stats">Combat Stats</string>
     <string name="cc_hp">Hit Points</string>
+    <string name="cc_stamina">Stamina</string>
     <string name="cc_ac">Armor Class</string>
     <string name="cc_speed">Speed (ft)</string>
     <string name="cc_initiative">Initiative</string>
@@ -93,6 +126,18 @@
     <string name="cc_background">Background</string>
     <string name="cc_alignment">Alignment</string>
     <string name="cc_notes">Notes</string>
+    <string name="cc_max_ability_points">Max Ability Points</string>
+    <string name="cc_ability_total">Total: %1$d / %2$d</string>
+    <string name="cc_ability_total_no_max">Total: %1$d</string>
+    <string name="cc_ability_total_exceeded">Total: %1$d / %2$d (exceeded!)</string>
+    <string name="cc_add_custom_ability">Add Custom Ability</string>
+    <string name="cc_custom_ability_name_hint">Ability Name</string>
+    <string name="cc_ability_points_exceeded">Ability point total (%1$d) exceeds the maximum (%2$d). Reduce your scores or increase the limit.</string>
+    <string name="cc_max_combat_points">Max Combat Points</string>
+    <string name="cc_combat_total">Total: %1$d / %2$d</string>
+    <string name="cc_combat_total_no_max">Total: %1$d</string>
+    <string name="cc_combat_total_exceeded">Total: %1$d / %2$d (exceeded!)</string>
+    <string name="cc_combat_points_exceeded">Combat point total (%1$d) exceeds the maximum (%2$d). Reduce your stats or increase the limit.</string>
     <string name="cc_save">Save</string>
     <string name="cc_load">Load</string>
     <string name="cc_save_success_title">Save Successful</string>
@@ -106,6 +151,9 @@
     <string name="cc_name_required">Please enter a character name before saving.</string>
     <string name="cc_select_character">Select a Character</string>
     <string name="cc_delete">Delete</string>
+    <string name="cc_saved_characters">Saved Characters</string>
+    <string name="cc_delete_confirm_title">Delete Character?</string>
+    <string name="cc_delete_confirm_message">Are you sure you want to delete %s?</string>
 
     <!-- Scenario Creation -->
     <string name="sc_title">Scenario Creator</string>
@@ -130,8 +178,397 @@
     <string name="sc_no_saved">No saved scenarios found</string>
     <string name="sc_select_scenario">Select a Scenario</string>
     <string name="sc_delete">Delete</string>
+    <string name="sc_saved_scenarios">Saved Scenarios</string>
+    <string name="sc_delete_confirm_title">Delete Scenario?</string>
+    <string name="sc_delete_confirm_message">Are you sure you want to delete %s?</string>
+    <string name="sc_gm_settings">AI GM Settings</string>
+    <string name="sc_run_length">Run Length</string>
+    <string name="sc_npc_count_hint">Number of NPCs</string>
+    <string name="sc_location_count_hint">Number of Locations</string>
+    <string name="sc_custom_rules_hint">Custom Rules (rules for the AI DM to follow)</string>
+    <string name="sc_stamina_recovery_hint">Stamina Recovery Per Turn</string>
+    <string name="sc_stamina_recovery_label">Stamina Recovery Per Turn (0 = none)</string>
+    <string name="sc_rulebook_label">Rulebook</string>
+    <string name="sc_rulebook_default">Default (D&amp;D 5e SRD)</string>
+    <string name="sc_rulebook_upload">Upload .txt</string>
+    <string name="sc_rulebook_clear">Clear</string>
+    <string name="sc_rulebook_too_large">File too large — truncated to 50,000 characters.</string>
+    <string name="sc_rulebook_read_error">Could not read file.</string>
     <string name="dm_select_scenario">Select a Scenario</string>
     <string name="dm_no_scenario">No Scenario (DM decides)</string>
+    <string name="dm_select_party">Select Party Members</string>
+    <string name="dm_no_party">Solo (No Party)</string>
+    <string name="dm_party_loading">Party members are responding\u2026</string>
+    <string name="dm_select_human_players">Which party members are human players?</string>
+    <string name="dm_pass_phone_title">Pass the Phone!</string>
+    <string name="dm_pass_phone_message">Hand the phone to %s</string>
+    <string name="dm_pass_phone_ready">I\'m Ready!</string>
+    <string name="dm_turn_indicator">%s\'s turn</string>
+    <string name="dm_all_ai">All AI</string>
+    <string name="dm_back_during_turns">Turn collection in progress. Are you sure you want to go back? Actions entered so far will be lost.</string>
+
+    <!-- PvP Mode -->
+    <string name="dm_pvp_select_mode">Game Mode</string>
+    <string name="dm_pvp_cooperative">Cooperative (work together)</string>
+    <string name="dm_pvp_competitive">PvP (compete against each other)</string>
+    <string name="dm_pvp_select_visibility">Player Visibility</string>
+    <string name="dm_pvp_visibility_open">Open (everyone sees all actions)</string>
+    <string name="dm_pvp_visibility_hidden">Hidden (actions are secret)</string>
+    <string name="dm_pvp_turn_indicator">%s\'s turn (PvP)</string>
+    <string name="dm_pvp_pass_phone_message">Hand the phone to %s.\n\nPrevious actions will be hidden.</string>
+
+    <!-- PvP Teams -->
+    <string name="dm_pvp_team_setup">Team Setup</string>
+    <string name="dm_pvp_free_for_all">Free-for-all (every player for themselves)</string>
+    <string name="dm_pvp_teams">Teams (assign players to teams)</string>
+    <string name="dm_pvp_team_count">How many teams?</string>
+    <string name="dm_pvp_assign_teams">Assign Players to Teams</string>
+    <string name="dm_pvp_team_label">Team %d</string>
+    <string name="dm_pvp_turn_indicator_team">%1$s\'s turn (Team %2$d)</string>
+    <string name="dm_pvp_randomize_teams">Randomize</string>
+
+    <!-- Inventory System -->
+    <string name="dm_inventory_title">Inventory</string>
+    <string name="dm_inventory_capacity">Capacity: %1$d / %2$d</string>
+    <string name="dm_inventory_empty">Your inventory is empty.</string>
+    <string name="dm_inventory_use">Use</string>
+    <string name="dm_inventory_drop">Drop</string>
+    <string name="dm_inventory_dropped">Dropped %s</string>
+    <string name="dm_inventory_full">Inventory full! Cannot pick up %s.</string>
+    <string name="dm_inventory_loot_found">LOOT FOUND: %s</string>
+    <string name="dm_inventory_set_capacity">Set Capacity</string>
+    <string name="dm_inventory_capacity_hint">Carry capacity</string>
+    <string name="dm_inventory_toggle">Open status</string>
+    <string name="dm_inventory_trade">Trade</string>
+    <string name="dm_item_durability">Durability: %1$d / %2$d</string>
+
+    <!-- Unclaimed Loot -->
+    <string name="dm_loot_unclaimed">%1$s\'s inventory is full — %2$s added to unclaimed loot.</string>
+    <string name="dm_loot_unclaimed_main">Inventory full — %s added to unclaimed loot.</string>
+    <string name="dm_unclaimed_loot_header">Unclaimed Loot (%d)</string>
+    <string name="dm_unclaimed_pick_up">Pick Up</string>
+    <string name="dm_unclaimed_pick_up_title">Who picks up %s?</string>
+    <string name="dm_unclaimed_picked_up">%1$s picked up %2$s</string>
+    <string name="dm_unclaimed_no_space">No one has inventory space to pick this up.</string>
+
+    <!-- Trading -->
+    <string name="dm_trade_select_member">Trade %s with\u2026</string>
+    <string name="dm_trade_select_item">Pick an item from %s</string>
+    <string name="dm_trade_complete">Traded %1$s for %2$s with %3$s</string>
+    <string name="dm_trade_no_members">No teammates with items to trade.</string>
+
+    <!-- Rules Advisor -->
+    <string name="rules_advisor_title">Rules Advisor</string>
+    <string name="rules_advisor_toggle">Open rules advisor</string>
+    <string name="rules_advisor_hint">Ask about D&amp;D rules\u2026</string>
+    <string name="rules_advisor_loading">Looking up rules\u2026</string>
+    <string name="rules_advisor_welcome">Ask me anything about D&amp;D 5e rules, mechanics, spells, abilities, or combat. I won\'t affect your adventure.</string>
+
+    <!-- Status Dialog -->
+    <string name="dm_status_title">Status</string>
+    <string name="dm_status_hp">HP: %1$d / %2$d</string>
+    <string name="dm_status_stamina">Stamina: %1$d / %2$d</string>
+
+    <!-- Member Status -->
+    <string name="dm_status_member_header">%1$s (%2$s)</string>
+    <string name="dm_member_loot_found">LOOT for %1$s: %2$s</string>
+    <string name="dm_member_inventory_full">%1$s\'s inventory full! Cannot pick up %2$s.</string>
+
+    <!-- HP & Stamina -->
+    <string name="dm_hp_damage">-%1$d HP (%2$d/%3$d)</string>
+    <string name="dm_hp_heal">+%1$d HP (%2$d/%3$d)</string>
+    <string name="dm_hp_zero">%1$s has fallen unconscious! (0 HP)</string>
+    <string name="dm_death">%1$s has died! They can no longer act or speak.</string>
+    <string name="dm_dead_cannot_act">You are dead and cannot take any actions.</string>
+    <string name="dm_dead_skip_turn">%1$s is dead and skips their turn.</string>
+    <string name="dm_status_dead">DEAD</string>
+    <string name="dm_stamina_drain">-%1$d Stamina (%2$d/%3$d)</string>
+    <string name="dm_stamina_recover">+%1$d Stamina (%2$d/%3$d)</string>
+    <string name="dm_stamina_zero">%1$s is completely exhausted! (0 Stamina)</string>
+    <string name="dm_exhausted">%1$s is exhausted! They can only speak, not take actions.</string>
+    <string name="dm_exhausted_recovered">%1$s has recovered from exhaustion and can act again!</string>
+    <string name="dm_exhausted_cannot_act">You are exhausted and can only speak, not take physical actions.</string>
+    <string name="dm_exhausted_skip_action">%1$s is exhausted and can only speak this turn.</string>
+    <string name="dm_status_exhausted">EXHAUSTED</string>
+    <string name="dm_stamina_recovery_turn">Stamina recovered: +%1$d for all living characters</string>
+
+    <!-- Character Creation - Inventory -->
+    <string name="cc_starting_items">Starting Items</string>
+    <string name="cc_carry_capacity">Carry Capacity</string>
+    <string name="cc_add_starting_item">Add Starting Item</string>
+    <string name="cc_item_name_hint">Item name</string>
+    <string name="cc_item_desc_hint">Description</string>
+    <string name="cc_item_durability_hint">Durability</string>
+
+    <!-- Terms of Service -->
+    <string name="tos_dialog_title">Terms of Service</string>
+    <string name="tos_agree">I Agree</string>
+    <string name="tos_agreed_note">You have already agreed to these terms.</string>
+    <string name="tos_certify">I certify that I have read and understood these terms</string>
+    <string name="tos_scroll_hint">Please scroll down to read all terms before accepting.</string>
+
+    <!-- User Guide -->
+    <string name="guide_show_on_startup">Show this guide when the app opens</string>
+
+    <!-- Developer Mode -->
+    <string name="dev_mode">Developer Mode</string>
+    <string name="dev_mode_desc">Edit stats, trigger game events, and test features mid-game</string>
+    <string name="dev_mode_enabled">Developer Mode enabled</string>
+    <string name="dev_mode_disabled">Developer Mode disabled</string>
+    <string name="dev_edit_hp">Edit HP</string>
+    <string name="dev_edit_stamina">Edit Stamina</string>
+    <string name="dev_edit_hp_title">Set HP</string>
+    <string name="dev_edit_stamina_title">Set Stamina</string>
+    <string name="dev_current_value_hint">Current value</string>
+    <string name="dev_max_value_hint">Max value</string>
+    <string name="dev_add_item">+ Add Item</string>
+    <string name="dev_add_item_title">Add Inventory Item</string>
+    <string name="dev_item_name_hint">Item name</string>
+    <string name="dev_item_desc_hint">Description (optional)</string>
+    <string name="dev_item_durability_hint">Durability (default 100)</string>
+    <string name="dev_trigger_win">Trigger Win</string>
+    <string name="dev_trigger_lose">Trigger Lose</string>
+    <string name="dev_complete_encounter">Complete Encounter</string>
+    <string name="dev_set_encounter">Set Encounter Index</string>
+    <string name="dev_set_encounter_title">Set Current Encounter</string>
+    <string name="dev_encounter_index_hint">Encounter index (0-based)</string>
+    <string name="dev_encounter_updated">Encounter index set to %d</string>
+    <string name="dev_no_encounters">No encounters in this scenario.</string>
+    <string name="dev_encounter_completed_dev">Encounter completed (dev). Now on %1$d / %2$d.</string>
+    <string name="dev_all_encounters_done">All encounters already complete.</string>
+    <string name="dev_kill_character">Kill Character</string>
+    <string name="dev_revive_character">Revive Character</string>
+    <string name="dev_select_kill">Select character to kill</string>
+    <string name="dev_select_revive">Select character to revive</string>
+    <string name="dev_killed">%s has been killed (dev).</string>
+    <string name="dev_revived">%s has been revived (dev).</string>
+    <string name="dev_no_alive">No living characters to kill.</string>
+    <string name="dev_no_dead">No dead characters to revive.</string>
+    <string name="dev_level_up">Level Up</string>
+    <string name="dev_leveled_up">%1$s leveled up to %2$d (dev).</string>
+    <string name="dev_edit_stats">Edit Adventure Stats</string>
+    <string name="dev_edit_stats_title">Edit Adventure Stats</string>
+    <string name="dev_enemies_hint">Enemies Defeated</string>
+    <string name="dev_items_used_hint">Items Used</string>
+    <string name="dev_loot_hint">Loot Collected</string>
+    <string name="dev_turns_hint">Turns Taken</string>
+    <string name="dev_damage_hint">Total Damage Taken</string>
+    <string name="dev_stats_updated">Adventure stats updated.</string>
+    <string name="dev_tools_title">Developer Tools</string>
+
+    <!-- Radio -->
+    <string name="radio_title">Ambient Radio</string>
+    <string name="radio_toggle">Toggle radio</string>
+    <string name="sfx_toggle">Toggle sound effects</string>
+    <string name="sfx_enabled">Sound effects on</string>
+    <string name="sfx_disabled">Sound effects off</string>
+    <string name="radio_tap_to_play">Tap a station to play</string>
+    <string name="radio_now_playing">Now Playing</string>
+    <string name="radio_status_playing">Playing: %s</string>
+    <string name="radio_buffering">Buffering\u2026</string>
+    <string name="radio_error">Error: %s</string>
+    <string name="radio_stop">Stop</string>
+
+    <!-- Interactive Tutorial -->
+    <string name="tutorial_start">Start Interactive Tutorial</string>
+    <string name="tutorial_next">Next</string>
+    <string name="tutorial_skip">Skip Tutorial</string>
+    <string name="tutorial_step_counter">Step %1$d of %2$d</string>
+    <string name="tutorial_started">Tutorial started! Follow the highlights.</string>
+    <string name="tutorial_skipped">Tutorial ended.</string>
+    <string name="tutorial_complete">Tutorial complete! You\'re all set.</string>
+    <string name="tutorial_go_back">Press Back to return and continue the tutorial.</string>
+
+    <!-- Home Screen Tutorial (10 steps) -->
+    <string name="tutorial_home_api_header">This is the API Settings panel. Let\'s expand it to see the configuration options inside.</string>
+    <string name="tutorial_home_api_gemini">This is where you enter your Gemini API key. Get a free key from Google AI Studio (aistudio.google.com). The Gemini key powers the AI Dungeon Master chat and Rules Advisor.</string>
+    <string name="tutorial_home_api_image">This is where you enter your HuggingFace API key for AI-generated scene illustrations during Dungeon Master sessions. Sign up at huggingface.co to get a free token.</string>
+    <string name="tutorial_home_character">Tap this card to open Character Creation. Build fully detailed D&amp;D characters with name, race, class, ability scores, combat stats, background, and starting inventory.</string>
+    <string name="tutorial_home_scenario">Tap this card to open the Scenario Creator. Design custom adventure settings with time periods, locations, NPCs, plot hooks, and AI GM rules for the Dungeon Master.</string>
+    <string name="tutorial_home_dice">Tap this card to open the Dice Roller. Roll dice using standard notation like \"2d6\" or \"d20\" with animated results and a full roll history log.</string>
+    <string name="tutorial_home_map">Tap this card to open the Map viewer. Import map images, place location markers and character tokens, draw colored annotations, and save your map data.</string>
+    <string name="tutorial_home_dm">This is the AI Dungeon Master \u2014 the centerpiece of the app. Start AI-powered adventures using your characters, scenarios, and maps. Supports solo play, AI parties, and hot-seat multiplayer!</string>
+    <string name="tutorial_home_radio">This is the Ambient Radio. Tap it to browse background music stations and set the mood for your adventure. Music keeps playing as you use other screens.</string>
+    <string name="tutorial_home_settings">Use the Dark Mode toggle to switch themes. Tap the gear icon to access Settings, where you can enable Developer Mode for mid-game HP, stamina, and inventory editing.</string>
+
+    <!-- Character Creation Tutorial (10 steps) -->
+    <string name="tutorial_cc_name">Start by entering your character\'s name \u2014 this is the only required field. All other fields have sensible defaults. We\'ve filled in \"Thorin Oakenshield\" for this demo.</string>
+    <string name="tutorial_cc_race">Choose your character\'s race from 9 options: Human, Elf, Dwarf, Halfling, Gnome, Half-Elf, Half-Orc, Tiefling, or Dragonborn. Each brings different flavor. We\'ve selected Dwarf.</string>
+    <string name="tutorial_cc_class">Choose your character\'s class from 12 options like Fighter, Wizard, Rogue, or Cleric. Your class shapes your combat style and abilities. We\'ve selected Fighter.</string>
+    <string name="tutorial_cc_level">Set your character\'s starting level (1\u201320). Most new adventures begin at level 1, but you can start higher for experienced characters. We\'ve set level 5.</string>
+    <string name="tutorial_cc_abilities">These are your six core ability scores: STR, DEX, CON, INT, WIS, and CHA. Modifiers are auto-calculated using (score \u2212 10) / 2. You can also set a max point budget and add custom abilities. We\'ve filled in demo values.</string>
+    <string name="tutorial_cc_combat">Set your combat stats: Hit Points (health), Armor Class (defense), Stamina (action energy), Speed (movement in feet), and Initiative (turn order bonus). We\'ve filled in demo values for a level 5 Fighter.</string>
+    <string name="tutorial_cc_details">Choose a Background (Soldier, Sage, Criminal, etc.) and Alignment (Lawful Good through Chaotic Evil). Add freeform Notes for personality, backstory, or goals. We\'ve selected Soldier and Lawful Good.</string>
+    <string name="tutorial_cc_items">Set your Carry Capacity (max inventory slots) and add Starting Items with names, descriptions, and durability values. These items become your character\'s inventory in Dungeon Master sessions.</string>
+    <string name="tutorial_cc_save">Tap Save to store your character locally. If you save with the same name, it overwrites the existing entry \u2014 great for updating characters between sessions.</string>
+    <string name="tutorial_cc_list">Your saved characters appear here. Tap any character to load it back into the form for editing. Tap the trash icon to delete a character (with confirmation).</string>
+
+    <!-- Dice Roll Tutorial (4 steps) -->
+    <string name="tutorial_dice_input">Enter dice notation here: \"d20\" for one 20-sided die, \"2d6\" for two 6-sided dice, \"3d8\" for three 8-sided dice. Supports 1\u2013100 dice with 2\u20131000 sides each. We\'ve filled in \"2d6.\"</string>
+    <string name="tutorial_dice_roll">Tap Roll to execute the dice roll. You\'ll see a rapid number animation followed by the final result with a satisfying bounce effect!</string>
+    <string name="tutorial_dice_result">Your roll result appears here in a large card showing the dice notation and the final number. The result animates in with a bounce for a fun tabletop feel.</string>
+    <string name="tutorial_dice_history">Every roll is logged in the Roll History below, showing the dice notation and result. History persists for the current session so you can track all your rolls.</string>
+
+    <!-- Scenario Creation Tutorial (10 steps) -->
+    <string name="tutorial_sc_name">Enter a name for your scenario. This identifies it when selecting scenarios for AI Dungeon Master sessions. We\'ve filled in \"The Lost Mine.\"</string>
+    <string name="tutorial_sc_time">Describe the time period for your adventure (e.g., \"Medieval era, Year 1400\"). This helps the AI set the right historical and cultural tone for the story.</string>
+    <string name="tutorial_sc_setting">Describe the physical setting \u2014 a forest, city, dungeon, or any location. The more detail you provide, the richer the world the AI builds around your characters. We\'ve added a sample.</string>
+    <string name="tutorial_sc_characters">List key NPCs the party might encounter: allies, enemies, merchants, quest-givers. Give them names and brief descriptions so the AI can bring them to life in dialogue and events.</string>
+    <string name="tutorial_sc_plot_hook">Write the opening situation or quest that kicks off the adventure. This is the first thing the AI Dungeon Master reads to begin the story. We\'ve added a sample quest.</string>
+    <string name="tutorial_sc_run_length">Choose how long you want the adventure to last: Short (5\u201310 encounters), Medium (15\u201325), Long (30\u201350), or Epic (50+). This guides the AI\'s pacing.</string>
+    <string name="tutorial_sc_gm_counts">Set how many NPCs and Locations the AI should weave into the story. Leave these blank to let the AI decide on its own.</string>
+    <string name="tutorial_sc_rules">Add custom rules for the AI DM, like \"No character deaths\" or \"Extra treasure drops.\" You can also set Stamina Recovery Per Turn (0 = no recovery). These shape the AI\'s behavior.</string>
+    <string name="tutorial_sc_save">Tap Save to store your scenario locally. Saved scenarios can be selected when starting a new AI Dungeon Master session to set the adventure\'s world and story.</string>
+    <string name="tutorial_sc_list">Your saved scenarios appear here. Tap any scenario to load it for editing. Tap the trash icon to delete a scenario (with confirmation). Save with the same name to update.</string>
+
+    <!-- Footer Links -->
+    <string name="how_to_use">How to Use This App</string>
+    <string name="privacy_and_terms">Privacy Policy &amp; Terms of Use</string>
+
+    <string name="how_to_use_title">How to Use This App</string>
+    <string name="privacy_terms_title">Privacy Policy &amp; Terms of Use</string>
+
+    <!-- Guide: section titles, bodies, and screenshots (arrays must have matching length).
+         To add a screenshot for a section, place the image in res/drawable/ (e.g. guide_home.png)
+         and replace the matching @null entry in guide_screenshots with @drawable/guide_home. -->
+    <string-array name="guide_titles">
+        <item>Getting Started</item>
+        <item>Setting Up API Keys</item>
+        <item>Character Creation</item>
+        <item>Scenario Creator</item>
+        <item>Dice Roller</item>
+        <item>Map</item>
+        <item>AI Dungeon Master</item>
+        <item>Ambient Radio</item>
+        <item>Tips</item>
+    </string-array>
+    <string-array name="guide_bodies">
+        <item>Board games are at their best when you\'re actually playing them \u2014 not buried in rulebooks, rolling physical dice, or spending half the night on setup. This app handles the busywork so you can focus on playing.\n\nFrom the home screen, tap any card to jump into a feature. Build characters, design scenarios, roll dice, annotate maps, stream background music, or run entire adventures with an AI Dungeon Master \u2014 everything is right here. Below is a detailed walkthrough of each feature.</item>
+        <item>Before using AI-powered features, you need to configure your API keys. Tap the \"API Settings\" card on the home screen to expand it.\n\n\u2022 Gemini API Key \u2014 Required for the AI Dungeon Master chat and Rules Advisor. Get a free key from Google AI Studio (aistudio.google.com).\n\u2022 HuggingFace API Key \u2014 Required for generating scene illustrations. Sign up at huggingface.co to obtain a token.\n\nEnter each key in its field and tap \"Save.\" A green \"Configured\" label confirms it is stored. Tap \"Clear\" at any time to remove a key.</item>
+        <item>Create fully detailed D&amp;D characters to use in your adventures.\n\n\u2022 Fill in basic info: name, race (9 options from Human to Dragonborn), class (12 options from Barbarian to Wizard), and level (1\u201320).\n\u2022 Set your six core ability scores (STR, DEX, CON, INT, WIS, CHA). Modifiers are calculated automatically using the standard formula: (score \u2212 10) / 2.\n\u2022 Add custom abilities with the \"Add Custom Ability\" button. Each custom ability has its own name, score, and auto-calculated modifier.\n\u2022 Optionally set a Max Ability Points budget. A running total tracks your point spend \u2014 it turns green when under budget and red when exceeded. You cannot save a character that exceeds the budget.\n\u2022 Configure combat stats: Hit Points, Armor Class, Stamina (action energy), Speed (movement in feet), and Initiative (turn order bonus). An optional Max Combat Points budget works the same way as ability points.\n\u2022 Add flavor with background (13 options from Acolyte to Urchin), alignment (9 alignments from Lawful Good to Chaotic Evil), and freeform notes for personality, backstory, or goals.\n\u2022 Set a Carry Capacity (max inventory slots) and add starting items with names, descriptions, and durability values. These items become your character\'s inventory in Dungeon Master sessions.\n\u2022 Tap \"Save\" to store your character locally. Saving with the same name overwrites the existing entry \u2014 great for updating characters between sessions.\n\u2022 Saved characters appear in the list at the bottom. Tap any character to load it back into the form for editing. Tap the trash icon to delete (with confirmation).</item>
+        <item>Design custom adventure settings that the AI Dungeon Master can use. Scenarios let you skip the prep work and jump straight into a tailored adventure.\n\n\u2022 Give your scenario a name, then describe the time period (e.g., \"Medieval era, Year 1400\") and setting (e.g., \"A cursed coastal city\").\n\u2022 List key characters and NPCs \u2014 allies, enemies, merchants, or anyone the party might encounter.\n\u2022 Write a plot hook: the opening situation or quest that kicks off the adventure.\n\u2022 Fine-tune the AI GM Settings to control the adventure\'s scope:\n  \u2013 Run Length: Short (5\u201310 encounters), Medium (15\u201325), Long (30\u201350), or Epic (50+).\n  \u2013 NPC Count and Location Count guide how many the AI weaves into the story.\n  \u2013 Custom Rules let you set directives for the AI DM, like \"No character deaths\" or \"Extra treasure drops.\"\n  \u2013 Stamina Recovery Per Turn controls how much stamina characters regain each turn (0 = no recovery).\n  \u2013 Rulebook: By default, the AI DM uses a built-in D&amp;D 5e SRD summary for game mechanics. Tap \"Upload .txt\" to upload a custom rulebook file (e.g., homebrew rules or a different game system). The AI will follow your custom rules instead. Tap \"Clear\" to revert to the default. Custom rulebooks are saved with the scenario.\n\u2022 Tap \"Save\" to store your scenario. Saved scenarios appear at the bottom. Tap to load, trash icon to delete. Save with the same name to update.</item>
+        <item>A full-featured RPG dice roller with history tracking.\n\n\u2022 Enter standard dice notation: \"d20\" for one twenty-sided die, \"2d6\" for two six-sided dice, \"3d8+5\" for three eight-sided dice plus a modifier of 5.\n\u2022 Tap \"Roll!\" to see your result with an animated bounce effect.\n\u2022 Supports 1\u2013100 dice at a time, with 2\u20131000 sides per die.\n\u2022 Your roll history is displayed below, showing every roll from the current session with dice notation, individual results, and totals.\n\u2022 Input validation catches mistakes before you roll \u2014 you\'ll see a clear error message if the notation is invalid.</item>
+        <item>An interactive map viewer and annotation tool for your game world.\n\n\u2022 Tap the \"+\" button to import any image from your device as a map.\n\u2022 Use the zoom controls to zoom in and out, and drag to pan across the map.\n\u2022 Place location markers: Tap the pin icon, then tap anywhere on the map to drop a labeled marker (e.g., \"Dragon\'s Lair\"). Tap a marker to delete it.\n\u2022 Place character tokens: Tap the character icon to enter character placement mode, then tap the map to place a named character token.\n\u2022 Draw annotations: Tap the brush icon to enter drawing mode. Choose from 8 colors using the palette button. Draw paths, borders, or highlights directly on the map.\n\u2022 Erase drawings: Tap the eraser icon, then tap any stroke to remove it. Long-press the eraser to clear all drawings at once.\n\u2022 Clear everything: Use the \"Clear All\" option to remove all points, characters, and drawings from the map in one step.\n\u2022 Your map, points, and drawings are automatically saved when you leave the screen. Unsaved changes will prompt you before exiting.</item>
+        <item>The centerpiece of the app \u2014 a fully AI-powered Dungeon Master for interactive RPG sessions.\n\nSETUP:\n\u2022 Select one of your saved characters. The AI receives your character\'s full stats, inventory, and backstory for context-aware storytelling.\n\u2022 Optionally select a saved scenario to set the adventure\'s world, NPCs, rules, and plot. Skip this to let the DM create the setting on the fly.\n\u2022 Recruit other saved characters as party members, or choose \"Solo (No Party)\" to adventure alone.\n\u2022 Mark which party members are human-controlled for hot-seat multiplayer. Unchecked members are AI-controlled. Tap \"All AI\" to make everyone AI.\n\nGAME MODES:\n\u2022 Cooperative \u2014 All players work together against the adventure\'s challenges.\n\u2022 PvP (Competitive) \u2014 Players compete against each other. Choose Open visibility (everyone sees all actions) or Hidden (actions are secret until resolved).\n\u2022 PvP Teams \u2014 In PvP mode, assign players to teams or use \"Randomize\" for random team assignments. Free-for-all is also available.\n\nTURN ORDER:\n\u2022 Solo / AI Party: The DM narrates, you act, then AI party members respond automatically (green chat bubbles).\n\u2022 Hot-Seat Multiplayer: After the DM narrates, each human player takes a turn. A \"Pass the Phone\" prompt appears between players. Human messages appear in teal bubbles.\n\nCOMBAT &amp; STATUS:\n\u2022 HP tracks your health. Reaching 0 HP causes unconsciousness; further damage causes death. Dead characters cannot act and skip their turns.\n\u2022 Stamina tracks action energy. Reaching 0 Stamina causes exhaustion \u2014 exhausted characters can speak but cannot take physical actions. Stamina can recover each turn if configured in the scenario.\n\u2022 The AI automatically adjusts HP and Stamina based on combat, healing, and story events.\n\u2022 Tap \"Open Status\" to view HP, Stamina, and inventory for your character and all party members.\n\nINVENTORY:\n\u2022 Items have names, descriptions, and durability values. Use or Drop items from your inventory.\n\u2022 When the AI awards loot, items are added automatically. If your inventory is full, loot goes to an Unclaimed Loot pool where any party member can pick it up.\n\u2022 Trade items between party members using the Trade option.\n\nOTHER FEATURES:\n\u2022 NPC and enemy dialogue appears in purple chat bubbles with character names.\n\u2022 Tap \"Illustrate\" to generate an AI illustration of the current scene (requires HuggingFace API key). Tap the image to view fullscreen.\n\u2022 Use \"New Run\" to start a fresh adventure. Tap the character info card to switch between past runs.\n\u2022 Map Integration: Toggle map access to let the DM see and modify your map \u2014 creating locations, placing tokens, and moving markers as the story unfolds.\n\u2022 Rulebook: The AI DM always has access to a detailed rules reference. By default it uses a built-in D&amp;D 5e SRD summary. If your scenario includes a custom uploaded rulebook, the AI uses that instead \u2014 great for homebrew systems or house rules.\n\u2022 Rules Advisor: Tap the info button to ask rules questions without affecting your adventure. The advisor has access to the same rulebook as the DM (default SRD or your custom upload) and knows your character\'s stats for tailored answers.\n\u2022 Developer Mode: When enabled in Settings, you can manually edit HP, Stamina, and add inventory items mid-game for testing or custom scenarios.</item>
+        <item>Set the mood for your adventures with background music that plays across all screens.\n\n\u2022 Tap the radio bar at the bottom of the home screen to open the station picker.\n\u2022 Browse available stations and tap any station to start streaming.\n\u2022 Music continues playing as you navigate between Character Creation, Dice Roller, Map, and Dungeon Master sessions.\n\u2022 Tap the stop button on the radio bar to stop playback at any time.\n\u2022 The app handles audio focus automatically \u2014 music ducks when other apps play audio and resumes when they stop.</item>
+        <item>\u2022 Create your characters and scenarios before starting a Dungeon Master session \u2014 the more detail you provide, the richer the adventure.\n\u2022 Create multiple characters with distinct stats, classes, and backstory notes to use as party members with different play styles.\n\u2022 For hot-seat multiplayer, create a character for each human player beforehand. During setup, select them as party members and mark them as human.\n\u2022 For PvP, try \"Hidden\" visibility mode with teams for the most strategic experience. Use \"Randomize\" for quick team assignment.\n\u2022 Set starting items and carry capacity on your characters before a DM session so you begin with gear ready to go.\n\u2022 Import a map image before your DM session so you can enable AI Map access for dynamic, story-driven map updates.\n\u2022 Upload a custom rulebook in the Scenario Creator to play with homebrew rules, a different game system, or house rules. The AI DM and Rules Advisor both follow whatever rulebook is active.\n\u2022 Use the Rules Advisor during adventures to look up spells, ability checks, combat rules, or class features without affecting the main story.\n\u2022 Enable Developer Mode in Settings to manually adjust HP, Stamina, and inventory mid-game \u2014 useful for testing or custom house rules.\n\u2022 Start the Ambient Radio before a session to set the atmosphere with background music.\n\u2022 Toggle Dark Mode from the home screen for comfortable play in any lighting.\n\u2022 The Dice Roller, Character Creation, Scenario Creator, and Map work fully offline \u2014 only the AI Dungeon Master and Ambient Radio require an internet connection.\n\u2022 All your data (characters, scenarios, map annotations, chat history, and adventure runs) is saved locally on your device.</item>
+    </string-array>
+    <!--
+         Screenshots for each guide section. Must have the same number of entries as guide_titles.
+         Use @null for sections without a screenshot. To add one, place the image in
+         res/drawable/ (e.g. guide_home.png) and change the matching entry to @drawable/guide_home.
+    -->
+    <array name="guide_screenshots">
+        <item>@null</item>   <!-- Getting Started -->
+        <item>@null</item>   <!-- Setting Up API Keys -->
+        <item>@null</item>   <!-- Character Creation -->
+        <item>@null</item>   <!-- Scenario Creator -->
+        <item>@null</item>   <!-- Dice Roller -->
+        <item>@null</item>   <!-- Map -->
+        <item>@null</item>   <!-- AI Dungeon Master -->
+        <item>@null</item>   <!-- Ambient Radio -->
+        <item>@null</item>   <!-- Tips -->
+    </array>
+
+    <!-- Privacy / Terms: section titles and bodies (arrays must have matching length) -->
+    <string-array name="privacy_titles">
+        <item>Data Collection &amp; Retention</item>
+        <item>Intellectual Property &amp; User Content</item>
+        <item>Prohibited Use</item>
+        <item>Third-Party Services</item>
+        <item>No Warranty</item>
+        <item>Acceptance of Terms</item>
+    </string-array>
+    <string-array name="privacy_bodies">
+        <item>By using this app, you acknowledge and agree that your data \u2014 including but not limited to characters, scenarios, chat messages, dice roll history, map annotations, API keys, and general usage information \u2014 may be collected, stored, and retained for an unlimited period of time.\n\nThis data may be used for analytics, service improvement, troubleshooting, and any other lawful purpose at the developer\'s discretion.</item>
+        <item>By using this app, you acknowledge and agree that all content you create, submit, or generate through this app \u2014 including but not limited to character data, scenario descriptions, chat messages, user input, adventure runs, AI-generated responses, map annotations, and any other user-generated or AI-assisted content \u2014 shall be the exclusive intellectual property of the publisher.\n\nYou hereby grant the publisher a perpetual, irrevocable, worldwide, royalty-free, and fully transferable license to use, reproduce, modify, distribute, display, and create derivative works from all such content for any purpose.\n\nAll adventure runs, session logs, and associated data created within the app are copyrighted works owned by the publisher. You may not claim ownership of, redistribute, or commercially exploit any content generated through the app without prior written consent from the publisher.</item>
+        <item>You are strictly prohibited from using this app for any illegal, unlawful, or unauthorized purpose. This includes, but is not limited to:\n\n\u2022 Generating, distributing, or storing content that violates any applicable local, state, national, or international law or regulation.\n\u2022 Harassing, threatening, defaming, or causing harm to any individual or group.\n\u2022 Creating or distributing malware, phishing schemes, or other malicious software.\n\u2022 Engaging in fraud, identity theft, or any form of deceptive activity.\n\u2022 Circumventing security measures or attempting unauthorized access to any system or data.\n\u2022 Using AI features to generate content that promotes violence, exploitation, or illegal activity.\n\nViolation of any of these terms may result in immediate and permanent termination of access without prior notice. The developer reserves the right to report illegal activity to the appropriate authorities.</item>
+        <item>This app integrates with the following third-party services:\n\n\u2022 Google Gemini API \u2014 Powers the AI Dungeon Master chat feature. Your messages and character data are sent to Google\'s servers for processing.\n\u2022 HuggingFace API \u2014 Powers scene illustration generation. Scene descriptions derived from your chat are sent to HuggingFace\'s servers.\n\nYour interactions with these services are governed by their respective privacy policies and terms of use. The developer is not responsible for how third-party services handle your data.</item>
+        <item>This app is provided on an \"AS IS\" and \"AS AVAILABLE\" basis without warranty of any kind, whether express or implied. The developer makes no guarantees regarding the accuracy, reliability, or availability of any feature, including AI-generated content.\n\nThe developer shall not be held liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use this app.</item>
+        <item>By continuing to use this app, you confirm that you have read, understood, and agree to be bound by all of the terms stated above. If you do not agree with any part of these terms, you must stop using the app immediately.</item>
+    </string-array>
+
+    <!-- Encounter Types -->
+    <string-array name="sc_encounter_types">
+        <item>Combat</item>
+        <item>Boss Fight</item>
+        <item>Puzzle</item>
+        <item>Social</item>
+        <item>Exploration</item>
+        <item>Trap</item>
+        <item>Rest Stop</item>
+        <item>Story Event</item>
+    </string-array>
+
+    <!-- Encounter Editor -->
+    <string name="sc_encounters_title">Encounter Sequence</string>
+    <string name="sc_no_encounters">No encounters added. The DM will create encounters dynamically.</string>
+    <string name="sc_add_encounter">Add Encounter</string>
+    <string name="sc_edit_encounter">Edit Encounter</string>
+    <string name="sc_encounter_name_hint">Encounter Name</string>
+    <string name="sc_encounter_type">Encounter Type</string>
+    <string name="sc_encounter_description_hint">Description (what happens in this encounter)</string>
+    <string name="sc_encounter_enemies_hint">Enemies / Entities (names, CR, counts)</string>
+    <string name="sc_encounter_objective_hint">Objective (win / complete condition)</string>
+    <string name="sc_encounter_notes_hint">DM Notes (optional guidance)</string>
+    <string name="sc_encounter_move_up">Move up</string>
+    <string name="sc_encounter_move_down">Move down</string>
+    <string name="sc_encounter_delete_title">Delete Encounter?</string>
+    <string name="sc_encounter_delete_message">Remove \"%s\" from the encounter sequence?</string>
+    <string name="sc_encounter_name_required">Encounter name is required.</string>
+
+    <!-- DM Encounter Tracking -->
+    <string name="dm_encounter_complete">Encounter Complete: %1$s (%2$d/%3$d)</string>
+    <string name="dm_encounters_finished">All encounters complete! The adventure concludes.</string>
+
+    <!-- Adventure Stats -->
+    <string name="dm_enemy_defeated">Defeated %1$d enemies!</string>
+    <string name="dm_stats_header">Adventure Stats</string>
+    <string name="dm_stats_enemies_defeated">Enemies Defeated: %1$d</string>
+    <string name="dm_stats_items_used">Items Used: %1$d</string>
+    <string name="dm_stats_loot_collected">Loot Collected: %1$d</string>
+    <string name="dm_stats_turns_taken">Turns Taken: %1$d</string>
+    <string name="dm_stats_damage_taken">Total Damage Taken: %1$d</string>
+    <string name="dm_stats_encounters_progress">Encounters: %1$d / %2$d</string>
+
+    <!-- Game Over -->
+    <string name="game_over_victory">VICTORY!</string>
+    <string name="game_over_defeat">DEFEAT</string>
+    <string name="game_over_subtitle_win">The adventure ends in triumph!</string>
+    <string name="game_over_subtitle_lose">The party has fallen\u2026</string>
+    <string name="game_over_subtitle_pvp_win">%s wins!</string>
+    <string name="game_over_subtitle_pvp_team_win">Team %d wins!</string>
+    <string name="game_over_subtitle_eliminated">%s has been eliminated.</string>
+    <string name="game_over_party_status">Party Status</string>
+    <string name="game_over_survived">Survived</string>
+    <string name="game_over_fallen">Fallen</string>
+    <string name="game_over_return_home">Return to Home</string>
+    <string name="game_over_new_run">New Run</string>
+    <string name="dm_pvp_eliminated">%s has been eliminated!</string>
+    <string name="dm_pvp_team_eliminated">Team %d has been eliminated!</string>
+    <string name="dm_game_over_pending">The adventure is over. Launching results\u2026</string>
+
+    <!-- Win/Lose Conditions (Scenario Creator) -->
+    <string name="sc_win_condition">Win Condition</string>
+    <string name="sc_lose_condition">Lose Condition</string>
+    <string name="sc_custom_win_text_hint">Custom win instructions for the AI</string>
+    <string name="sc_custom_lose_text_hint">Custom lose instructions for the AI</string>
+    <string-array name="sc_win_conditions">
+        <item>All Encounters Complete</item>
+        <item>Custom (AI decides)</item>
+    </string-array>
+    <string-array name="sc_lose_conditions">
+        <item>All Party Members Die</item>
+        <item>Custom (AI decides)</item>
+    </string-array>
+
+    <!-- Run Length options -->
+    <string-array name="sc_run_lengths">
+        <item>Short (5–10 encounters)</item>
+        <item>Medium (15–25 encounters)</item>
+        <item>Long (30–50 encounters)</item>
+        <item>Epic (50+ encounters)</item>
+    </string-array>
 
     <!-- Race options -->
     <string-array name="cc_races">

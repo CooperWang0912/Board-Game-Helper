@@ -23,6 +23,7 @@
 
         <!-- ===== Basic Info Card ===== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_basic_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -73,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="4dp"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:background="?attr/selectableItemBackground" />
 
                 <!-- Class Spinner -->
                 <TextView
@@ -89,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="4dp"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:background="?attr/selectableItemBackground" />
 
                 <!-- Level -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -113,6 +114,7 @@
 
         <!-- ===== Ability Scores Card ===== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_ability_scores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -132,6 +134,39 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorPrimary" />
+
+                <!-- Max Ability Points and Running Total -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="12dp"
+                        android:hint="@string/cc_max_ability_points"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_max_ability_points"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="4" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/text_ability_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
                 <TableLayout
                     android:layout_width="match_parent"
@@ -182,7 +217,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_str_mod"
                             android:layout_width="60dp"
@@ -213,7 +248,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_dex_mod"
                             android:layout_width="60dp"
@@ -244,7 +279,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_con_mod"
                             android:layout_width="60dp"
@@ -275,7 +310,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_int_mod"
                             android:layout_width="60dp"
@@ -306,7 +341,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_wis_mod"
                             android:layout_width="60dp"
@@ -337,7 +372,7 @@
                             android:gravity="center"
                             android:textSize="18sp"
                             android:text="10"
-                            android:background="@android:drawable/edit_text" />
+                            />
                         <TextView
                             android:id="@+id/text_cha_mod"
                             android:layout_width="60dp"
@@ -352,11 +387,30 @@
 
                 </TableLayout>
 
+                <!-- Custom Abilities Container -->
+                <LinearLayout
+                    android:id="@+id/container_custom_abilities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <!-- Add Custom Ability Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_custom_ability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/cc_add_custom_ability"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconGravity="textStart" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- ===== Combat Stats Card ===== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_combat_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -376,6 +430,39 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="?attr/colorPrimary" />
+
+                <!-- Max Combat Points and Running Total -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="12dp"
+                        android:hint="@string/cc_max_combat_points"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_max_combat_points"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="4" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/text_combat_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -422,6 +509,24 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
+
+                <!-- Stamina -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/cc_stamina"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_stamina"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:gravity="center"
+                        android:text="100" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -474,6 +579,7 @@
 
         <!-- ===== Details Card ===== -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -508,7 +614,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="4dp"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:background="?attr/selectableItemBackground" />
 
                 <!-- Alignment Spinner -->
                 <TextView
@@ -524,7 +630,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginTop="4dp"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:background="?attr/selectableItemBackground" />
 
                 <!-- Notes -->
                 <com.google.android.material.textfield.TextInputLayout
@@ -543,44 +649,109 @@
                         android:gravity="top" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Starting Items -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/cc_starting_items"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary" />
+
+                <!-- Carry Capacity -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/cc_carry_capacity"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_carry_capacity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:text="10" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Item rows container -->
+                <LinearLayout
+                    android:id="@+id/container_starting_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_starting_item"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/cc_add_starting_item"
+                    app:cornerRadius="8dp"
+                    app:icon="@android:drawable/ic_menu_add"
+                    app:iconGravity="textStart" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- ===== Action Buttons ===== -->
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save_character"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/cc_save"
+            android:textSize="16sp"
+            app:cornerRadius="12dp"
+            app:icon="@android:drawable/ic_menu_save"
+            app:iconGravity="textStart" />
+
+        <!-- ===== Saved Characters List ===== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_saved_characters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
-            android:orientation="horizontal"
-            android:gravity="center">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_save_character"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="@string/cc_save"
-                android:textSize="16sp"
-                app:cornerRadius="12dp"
-                app:icon="@android:drawable/ic_menu_save"
-                app:iconGravity="textStart" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_load_character"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="@string/cc_load"
-                android:textSize="16sp"
-                app:cornerRadius="12dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:icon="@android:drawable/ic_menu_upload"
-                app:iconGravity="textStart" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cc_saved_characters"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/text_no_characters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/cc_no_saved"
+                    android:textSize="14sp"
+                    android:alpha="0.5"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/list_saved_characters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

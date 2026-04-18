@@ -11,6 +11,8 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <!-- Light mode: off-white background so white cards stand out -->
+        <item name="android:colorBackground">@color/light_background</item>
+        <item name="colorSurface">@color/card_light_surface</item>
     </style>
 </resources>

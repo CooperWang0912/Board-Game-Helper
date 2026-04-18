@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Ability Name -->
+    <EditText
+        android:id="@+id/edit_custom_ability_name"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_weight="1"
+        android:hint="@string/cc_custom_ability_name_hint"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:textSize="14sp"
+        />
+
+    <!-- Score -->
+    <EditText
+        android:id="@+id/edit_custom_ability_score"
+        android:layout_width="80dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="8dp"
+        android:inputType="number"
+        android:maxLength="2"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="10"
+        />
+
+    <!-- Modifier -->
+    <TextView
+        android:id="@+id/text_custom_ability_mod"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="+0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary" />
+
+    <!-- Delete Button -->
+    <ImageButton
+        android:id="@+id/btn_delete_custom_ability"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cc_delete"
+        android:scaleType="centerInside" />
+
+</LinearLayout>

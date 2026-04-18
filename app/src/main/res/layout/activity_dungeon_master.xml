@@ -1,133 +1,341 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- Character info bar -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_character_info"
+    <!-- Main content (existing layout) -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:visibility="gone"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="2dp"
-        app:contentPadding="12dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Character info bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_character_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:contentPadding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_character_info"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_map_toggle"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_dialog_map"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    android:contentDescription="@string/dm_map_toggle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_inventory"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_menu_agenda"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    android:contentDescription="@string/dm_inventory_toggle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_rules_advisor"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_menu_info_details"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    android:contentDescription="@string/rules_advisor_toggle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_radio"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@drawable/ic_radio"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    android:contentDescription="@string/radio_toggle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_sfx_toggle"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_lock_silent_mode_off"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    android:contentDescription="@string/sfx_toggle" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_new_run"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/dm_new_run"
+                    android:textSize="12sp"
+                    app:cornerRadius="16dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Chat messages -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_chat"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Loading indicator -->
+        <LinearLayout
+            android:id="@+id/layout_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/text_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dm_loading"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Turn indicator for hot-seat multiplayer -->
+        <TextView
+            android:id="@+id/text_turn_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/human_player_bg"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textColor="@color/human_player_text"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- Input bar -->
+        <LinearLayout
+            android:id="@+id/layout_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="24dp"
+                app:boxCornerRadiusBottomStart="24dp"
+                app:boxCornerRadiusTopEnd="24dp"
+                app:boxCornerRadiusTopStart="24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/dm_message_hint"
+                    android:inputType="text"
+                    android:maxLines="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_illustrate"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@string/dm_illustrate"
+                android:textSize="12sp"
+                app:cornerRadius="24dp"
+                app:icon="@android:drawable/ic_menu_gallery"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dm_send"
+                app:cornerRadius="24dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Rules Advisor drawer (opens from the right) -->
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="?android:attr/colorBackground"
+        android:orientation="vertical">
+
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="12dp">
 
             <TextView
-                android:id="@+id/text_character_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="14sp"
+                android:text="@string/rules_advisor_title"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_new_run"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:id="@+id/btn_close_rules"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/dm_new_run"
-                android:textSize="12sp"
-                app:cornerRadius="16dp" />
+                android:text="@string/close" />
 
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Chat messages -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_chat"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
-
-    <!-- Loading indicator -->
-    <LinearLayout
-        android:id="@+id/layout_loading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp" />
-
-        <TextView
-            android:id="@+id/text_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dm_loading"
-            android:textSize="14sp" />
-
-    </LinearLayout>
-
-    <!-- Input bar -->
-    <LinearLayout
-        android:id="@+id/layout_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:visibility="gone">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <!-- Rules chat messages -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_rules_chat"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="24dp"
-            app:boxCornerRadiusBottomStart="24dp"
-            app:boxCornerRadiusTopEnd="24dp"
-            app:boxCornerRadiusTopStart="24dp">
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_message"
-                android:layout_width="match_parent"
+        <!-- Rules loading indicator -->
+        <LinearLayout
+            android:id="@+id/layout_rules_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/dm_message_hint"
-                android:inputType="text"
-                android:maxLines="3" />
+                android:text="@string/rules_advisor_loading"
+                android:textSize="14sp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_illustrate"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+        <!-- Rules input bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:text="@string/dm_illustrate"
-            android:textSize="12sp"
-            app:cornerRadius="24dp"
-            app:icon="@android:drawable/ic_menu_gallery"
-            app:iconGravity="textStart" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dm_send"
-            app:cornerRadius="24dp" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="24dp"
+                app:boxCornerRadiusBottomStart="24dp"
+                app:boxCornerRadiusTopEnd="24dp"
+                app:boxCornerRadiusTopStart="24dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_rules_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rules_advisor_hint"
+                    android:inputType="text"
+                    android:maxLines="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_rules_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dm_send"
+                app:cornerRadius="24dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

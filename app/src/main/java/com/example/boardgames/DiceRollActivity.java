@@ -23,6 +23,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ public class DiceRollActivity extends AppCompatActivity {
     private final Random random = new Random();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean isAnimating = false;
+    private SoundEffectManager sfx;
 
     private static final List<RollEntry> rollHistory = new ArrayList<>();
     private HistoryAdapter historyAdapter;
@@ -58,6 +60,8 @@ public class DiceRollActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        sfx = new SoundEffectManager(this);
 
         editDiceInput = findViewById(R.id.edit_dice_input);
         btnRoll = findViewById(R.id.btn_roll);
@@ -83,6 +87,37 @@ public class DiceRollActivity extends AppCompatActivity {
             onRollClicked();
             return true;
         });
+
+        setupTutorial();
+    }
+
+    private void setupTutorial() {
+        TutorialManager mgr = TutorialManager.getInstance(this);
+        if (!mgr.isActive()) return;
+
+        mgr.registerSteps("DiceRollActivity", Arrays.asList(
+                // 1. Input field
+                new TutorialManager.TutorialStep(R.id.edit_dice_input,
+                        R.string.tutorial_dice_input,
+                        () -> editDiceInput.setText("2d6")),
+                // 2. Roll button
+                new TutorialManager.TutorialStep(R.id.btn_roll,
+                        R.string.tutorial_dice_roll),
+                // 3. Result card
+                new TutorialManager.TutorialStep(R.id.card_result,
+                        R.string.tutorial_dice_result,
+                        () -> {
+                            cardResult.setVisibility(View.VISIBLE);
+                            textDiceLabel.setText("2d6");
+                            textResult.setText("7");
+                        }),
+                // 4. Roll history
+                new TutorialManager.TutorialStep(R.id.text_history_header,
+                        R.string.tutorial_dice_history,
+                        () -> textHistoryHeader.setVisibility(View.VISIBLE))
+        ));
+
+        TutorialOverlayView.attach(this, "DiceRollActivity");
     }
 
     private void onRollClicked() {
@@ -147,6 +182,7 @@ public class DiceRollActivity extends AppCompatActivity {
     private void animateRoll(String label, int finalResult, int count, int sides) {
         isAnimating = true;
         btnRoll.setEnabled(false);
+        sfx.playDiceRoll();
 
         textDiceLabel.setText(label);
         cardResult.setVisibility(View.VISIBLE);
@@ -201,6 +237,9 @@ public class DiceRollActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (sfx != null) {
+            sfx.release();
+        }
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
     }
