@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -234,7 +236,6 @@ public class DungeonMasterActivity extends AppCompatActivity
     private GenerateContentConfig rulesGeminiConfig;
 
     // Radio
-    private MaterialButton btnRadio;
     private RadioService radioService;
     private boolean radioServiceBound;
     private final ServiceConnection radioServiceConnection = new ServiceConnection() {
@@ -298,23 +299,6 @@ public class DungeonMasterActivity extends AppCompatActivity
         btnRulesAdvisor.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.END));
         findViewById(R.id.btn_close_rules).setOnClickListener(v -> drawerLayout.closeDrawer(GravityCompat.END));
         btnRulesSend.setOnClickListener(v -> onRulesSendClicked());
-
-        btnRadio = findViewById(R.id.btn_radio);
-        btnRadio.setOnClickListener(v -> {
-            ensureRadioServiceBound();
-            RadioBottomSheetFragment sheet = new RadioBottomSheetFragment();
-            sheet.show(getSupportFragmentManager(), "radio");
-        });
-
-        MaterialButton btnSfxToggle = findViewById(R.id.btn_sfx_toggle);
-        updateSfxButtonTint(btnSfxToggle);
-        btnSfxToggle.setOnClickListener(v -> {
-            sfx.setEnabled(this, !sfx.isEnabled());
-            updateSfxButtonTint(btnSfxToggle);
-            Toast.makeText(this,
-                    sfx.isEnabled() ? R.string.sfx_enabled : R.string.sfx_disabled,
-                    Toast.LENGTH_SHORT).show();
-        });
 
         String apiKey = getGeminiApiKey();
         if (apiKey == null || apiKey.isEmpty() || apiKey.equals("your_key_here")) {
@@ -6084,31 +6068,33 @@ public class DungeonMasterActivity extends AppCompatActivity
     }
 
     private void updateRadioButtonTint() {
-        if (btnRadio == null) {
-            return;
-        }
-        boolean playing = radioServiceBound && radioService != null && radioService.isPlaying();
-        if (playing) {
-            int purple = getResources().getColor(R.color.purple_500, getTheme());
-            btnRadio.setIconTint(ColorStateList.valueOf(purple));
-            btnRadio.setStrokeColor(ColorStateList.valueOf(purple));
-        } else {
-            int gray = Color.parseColor("#999999");
-            btnRadio.setIconTint(ColorStateList.valueOf(gray));
-            btnRadio.setStrokeColor(ColorStateList.valueOf(gray));
-        }
+        // Radio button moved to options menu; no tinting needed
     }
 
-    private void updateSfxButtonTint(MaterialButton btn) {
-        if (btn == null) return;
-        if (sfx.isEnabled()) {
-            int purple = getResources().getColor(R.color.purple_500, getTheme());
-            btn.setIconTint(ColorStateList.valueOf(purple));
-            btn.setStrokeColor(ColorStateList.valueOf(purple));
-        } else {
-            int gray = Color.parseColor("#999999");
-            btn.setIconTint(ColorStateList.valueOf(gray));
-            btn.setStrokeColor(ColorStateList.valueOf(gray));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_dungeon_master, menu);
+        MenuItem sfxItem = menu.findItem(R.id.action_sfx_toggle);
+        sfxItem.setChecked(sfx.isEnabled());
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_radio) {
+            ensureRadioServiceBound();
+            RadioBottomSheetFragment sheet = new RadioBottomSheetFragment();
+            sheet.show(getSupportFragmentManager(), "radio");
+            return true;
+        } else if (id == R.id.action_sfx_toggle) {
+            sfx.setEnabled(this, !sfx.isEnabled());
+            item.setChecked(sfx.isEnabled());
+            Toast.makeText(this,
+                    sfx.isEnabled() ? R.string.sfx_enabled : R.string.sfx_disabled,
+                    Toast.LENGTH_SHORT).show();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }

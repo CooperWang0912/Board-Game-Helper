@@ -86,38 +86,6 @@
                     android:contentDescription="@string/rules_advisor_toggle" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_radio"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:padding="0dp"
-                    app:cornerRadius="20dp"
-                    app:icon="@drawable/ic_radio"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    android:contentDescription="@string/radio_toggle" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_sfx_toggle"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:padding="0dp"
-                    app:cornerRadius="20dp"
-                    app:icon="@android:drawable/ic_lock_silent_mode_off"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    android:contentDescription="@string/sfx_toggle" />
-
-                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_new_run"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
