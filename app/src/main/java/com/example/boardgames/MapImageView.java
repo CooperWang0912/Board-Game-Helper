@@ -76,8 +76,6 @@ public class MapImageView extends AppCompatImageView {
     private Paint charLabelOutlinePaint;
     private Bitmap avatarBitmap;
     private int avatarBitmapSize;
-    private float avatarImageSize;
-    private float avatarMinScreenSize;
     private final RectF avatarDestRect = new RectF();
     private final Paint avatarPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
@@ -242,11 +240,8 @@ public class MapImageView extends AppCompatImageView {
         labelOutlinePaint.setStyle(Paint.Style.STROKE);
         labelOutlinePaint.setStrokeWidth(3f * density);
 
-        // Avatar: fixed size in image space so it scales with map zoom.
-        // Render bitmap large for quality; actual draw size is computed per-frame.
-        avatarImageSize = charRadius * 8;
-        avatarMinScreenSize = 14f * density;
-        avatarBitmapSize = Math.round(charRadius * 8);
+        // Avatar drawn at same fixed screen size as pin markers (pointRadius * 2 diameter).
+        avatarBitmapSize = Math.round(pointRadius * 2);
         Drawable avatarDrawable = ContextCompat.getDrawable(context, R.drawable.ic_default_avatar);
         if (avatarDrawable != null) {
             avatarBitmap = Bitmap.createBitmap(avatarBitmapSize, avatarBitmapSize, Bitmap.Config.ARGB_8888);
@@ -421,9 +416,8 @@ public class MapImageView extends AppCompatImageView {
     private void drawPoints(Canvas canvas) {
         if (points.isEmpty()) return;
 
-        float scale = getCurrentScale();
-        float avatarScreenSize = Math.max(avatarMinScreenSize, avatarImageSize * scale);
-        float cullMargin = Math.max(avatarScreenSize / 2f, pointRadius) + 20f * density;
+        float charIconSize = pointRadius * 2;
+        float cullMargin = charIconSize / 2f + 20f * density;
 
         for (int i = 0, n = points.size(); i < n; i++) {
             MapPoint point = points.get(i);
@@ -440,7 +434,7 @@ public class MapImageView extends AppCompatImageView {
             }
 
             if (point.isCharacter) {
-                drawCharacterMarker(canvas, screenX, screenY, point.label, avatarScreenSize);
+                drawCharacterMarker(canvas, screenX, screenY, point.label, charIconSize);
             } else {
                 drawPinMarker(canvas, screenX, screenY, point.label);
             }
