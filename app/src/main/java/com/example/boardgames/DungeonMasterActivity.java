@@ -1970,7 +1970,6 @@ public class DungeonMasterActivity extends AppCompatActivity
         awaitingHumanTurns = true;
         currentTurnIndex = 0;
         turnActions.clear();
-        btnIllustrate.setEnabled(false);
         btnNewRun.setEnabled(false);
 
         // Reset message visibility so the primary player sees the full DM narration
